@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMembers, useDivisions, useDeleteMember } from '../../hooks/useMembers';
 import { useAuth } from '../../hooks/useAuth';
-import { User, Role } from '../../types';
+import { User } from '../../types';
 import { PageHeader } from '../../components/common/PageHeader';
 import { DataTable, Column } from '../../components/common/DataTable';
 import { SearchInput } from '../../components/common/SearchInput';

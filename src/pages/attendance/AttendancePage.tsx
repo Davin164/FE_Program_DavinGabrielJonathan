@@ -10,7 +10,6 @@ import {
   ClipboardCheck,
   CheckCircle2,
   Calendar,
-  Clock,
   KeyRound,
   ShieldCheck,
   UserCheck,

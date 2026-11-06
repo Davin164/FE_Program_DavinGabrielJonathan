@@ -12,14 +12,12 @@ import { EmptyState } from '../../components/common/EmptyState';
 import { ConfirmDialog } from '../../components/common/ConfirmDialog';
 import {
   Calendar,
-  Clock,
   MapPin,
   Users,
   Edit2,
   Trash2,
   CheckCircle2,
   UserCheck,
-  Check,
 } from 'lucide-react';
 import { formatDateTime, formatDate, formatTime } from '../../lib/utils';
 

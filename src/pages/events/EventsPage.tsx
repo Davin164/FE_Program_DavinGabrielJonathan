@@ -20,7 +20,7 @@ import {
 import { formatDateTime } from '../../lib/utils';
 
 export const EventsPage: React.FC = () => {
-  const { role, user } = useAuth();
+  const { role } = useAuth();
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'upcoming' | 'past'>('all');
 

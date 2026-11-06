@@ -21,10 +21,10 @@ export const useCheckIn = () => {
 
   return useMutation({
     mutationFn: async ({ eventId, code }: { eventId: string; code?: string }) => {
-      const { data } = await api.post<ApiResponse<Attendance>>(`/events/${eventId}/check-in`, { code });
+      const { data } = await api.post<ApiResponse<Attendance>>(`/events/${eventId}/checkin`, { code });
       return data.data;
     },
-    onSuccess: (attendance, variables) => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['attendances', variables.eventId] });
       queryClient.invalidateQueries({ queryKey: ['my-attendances'] });
       toast.success('Check-in confirmed! Your attendance has been recorded.');
