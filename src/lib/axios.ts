@@ -47,8 +47,13 @@ api.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    // If 401 and not already retried
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const isAuthEndpoint =
+      originalRequest.url?.includes('/auth/login') ||
+      originalRequest.url?.includes('/auth/register') ||
+      originalRequest.url?.includes('/auth/refresh');
+
+    // If 401 on regular protected endpoints and not already retried
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -68,14 +73,17 @@ api.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
         if (!refreshToken) {
-          throw new Error('No refresh token available');
+          localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+          localStorage.removeItem(STORAGE_KEYS.USER);
+          return Promise.reject(error);
         }
 
         const { data } = await axios.post(`${baseURL}/auth/refresh`, {
           refresh_token: refreshToken,
         });
 
-        const newAccessToken = data.data?.access_token || data.access_token;
+        const newAccessToken =
+          data.data?.accessToken || data.data?.access_token || data.accessToken || data.access_token;
         if (!newAccessToken) {
           throw new Error('Failed to obtain new access token');
         }

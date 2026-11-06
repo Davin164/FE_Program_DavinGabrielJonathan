@@ -128,8 +128,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const response = await api.post('/auth/login', { email, password });
       const { data } = response.data;
-      const token = data.access_token || data.token;
-      const refreshToken = data.refresh_token;
+      const token = data.accessToken || data.access_token || data.token;
+      const refreshToken = data.refreshToken || data.refresh_token;
       const userData: User = data.user;
 
       setAuthData(token, refreshToken, userData);
@@ -151,8 +151,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const response = await api.post('/auth/register', payload);
       const { data } = response.data;
-      const token = data.access_token || data.token;
-      const refreshToken = data.refresh_token;
+      const token = data.accessToken || data.access_token || data.token;
+      const refreshToken = data.refreshToken || data.refresh_token;
       const userData: User = data.user;
 
       setAuthData(token, refreshToken, userData);
