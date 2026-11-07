@@ -49,7 +49,7 @@ export const DashboardPage: React.FC = () => {
           Quick Actions:
         </span>
         <div className="flex flex-wrap items-center gap-2.5">
-          {role === 'LEAD' && (
+          {(role === 'LEAD' || role === 'CO_LEAD') && (
             <>
               <Link
                 to="/members/new"
@@ -75,7 +75,7 @@ export const DashboardPage: React.FC = () => {
             </>
           )}
 
-          {role === 'DIVISION_HEAD' && (
+          {role !== 'LEAD' && role !== 'CO_LEAD' && role !== 'MEMBER' && (
             <>
               <Link
                 to="/events/new"

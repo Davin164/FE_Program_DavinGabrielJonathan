@@ -121,7 +121,7 @@ export const MembersPage: React.FC = () => {
             <Eye className="w-4 h-4" />
           </Link>
 
-          {currentUserRole === 'LEAD' && (
+          {(currentUserRole === 'LEAD' || currentUserRole === 'CO_LEAD') && (
             <>
               <Link
                 to={`/members/${user.id}/edit`}
@@ -151,7 +151,7 @@ export const MembersPage: React.FC = () => {
         title="GDGoC Members"
         description="Directory of registered members, division heads, and chapter leaders."
         actions={
-          currentUserRole === 'LEAD' && (
+          (currentUserRole === 'LEAD' || currentUserRole === 'CO_LEAD') && (
             <Link
               to="/members/new"
               className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white text-sm font-semibold rounded-xl shadow-subtle transition-colors"
@@ -192,7 +192,11 @@ export const MembersPage: React.FC = () => {
           >
             <option value="">All Roles</option>
             <option value="LEAD">Lead</option>
-            <option value="DIVISION_HEAD">Division Head</option>
+            <option value="CO_LEAD">Co-Lead</option>
+            <option value="SECRETARY">Secretary</option>
+            <option value="TREASURER">Treasurer</option>
+            <option value="TECHNICAL_DIVISION">Technical Division</option>
+            <option value="NON_TECHNICAL_DIVISION">Non-Technical Division</option>
             <option value="MEMBER">Member</option>
           </select>
 

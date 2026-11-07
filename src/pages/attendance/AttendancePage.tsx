@@ -18,7 +18,7 @@ import { isWithinInterval, parseISO } from 'date-fns';
 
 export const AttendancePage: React.FC = () => {
   const { role, user } = useAuth();
-  const isPrivileged = role === 'LEAD' || role === 'DIVISION_HEAD';
+  const isPrivileged = Boolean(role && role !== 'MEMBER');
 
   // State
   const [selectedEventId, setSelectedEventId] = useState<string>('');

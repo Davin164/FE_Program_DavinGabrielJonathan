@@ -62,7 +62,7 @@ export const App: React.FC = () => {
                 <Route
                   path="/members/new"
                   element={
-                    <RoleGuard allowedRoles={['LEAD']}>
+                    <RoleGuard allowedRoles={['LEAD', 'CO_LEAD']}>
                       <MemberFormPage />
                     </RoleGuard>
                   }
@@ -71,7 +71,7 @@ export const App: React.FC = () => {
                 <Route
                   path="/members/:id/edit"
                   element={
-                    <RoleGuard allowedRoles={['LEAD']}>
+                    <RoleGuard allowedRoles={['LEAD', 'CO_LEAD']}>
                       <MemberFormPage />
                     </RoleGuard>
                   }
@@ -82,7 +82,16 @@ export const App: React.FC = () => {
                 <Route
                   path="/events/new"
                   element={
-                    <RoleGuard allowedRoles={['LEAD', 'DIVISION_HEAD']}>
+                    <RoleGuard
+                      allowedRoles={[
+                        'LEAD',
+                        'CO_LEAD',
+                        'SECRETARY',
+                        'TREASURER',
+                        'TECHNICAL_DIVISION',
+                        'NON_TECHNICAL_DIVISION',
+                      ]}
+                    >
                       <EventFormPage />
                     </RoleGuard>
                   }
@@ -91,7 +100,16 @@ export const App: React.FC = () => {
                 <Route
                   path="/events/:id/edit"
                   element={
-                    <RoleGuard allowedRoles={['LEAD', 'DIVISION_HEAD']}>
+                    <RoleGuard
+                      allowedRoles={[
+                        'LEAD',
+                        'CO_LEAD',
+                        'SECRETARY',
+                        'TREASURER',
+                        'TECHNICAL_DIVISION',
+                        'NON_TECHNICAL_DIVISION',
+                      ]}
+                    >
                       <EventFormPage />
                     </RoleGuard>
                   }

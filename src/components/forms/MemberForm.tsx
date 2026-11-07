@@ -14,7 +14,15 @@ const memberFormSchema = z.object({
     .min(8, 'Password must be at least 8 characters')
     .optional()
     .or(z.literal('')),
-  role: z.enum(['LEAD', 'DIVISION_HEAD', 'MEMBER']),
+  role: z.enum([
+    'LEAD',
+    'CO_LEAD',
+    'SECRETARY',
+    'TREASURER',
+    'TECHNICAL_DIVISION',
+    'NON_TECHNICAL_DIVISION',
+    'MEMBER',
+  ]),
   division_id: z.string().optional(),
   nim: z.string().min(8, 'NIM must be at least 8 characters').optional().or(z.literal('')),
   phone: z.string().optional(),
@@ -118,8 +126,12 @@ export const MemberForm: React.FC<MemberFormProps> = ({
             className="w-full px-3.5 py-2.5 text-sm bg-surface border border-border rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-subtle"
           >
             <option value="MEMBER">Member</option>
-            <option value="DIVISION_HEAD">Division Head</option>
             <option value="LEAD">Lead</option>
+            <option value="CO_LEAD">Co-Lead</option>
+            <option value="SECRETARY">Secretary</option>
+            <option value="TREASURER">Treasurer</option>
+            <option value="TECHNICAL_DIVISION">Technical Division</option>
+            <option value="NON_TECHNICAL_DIVISION">Non-Technical Division</option>
           </select>
           {errors.role && <p className="mt-1 text-xs text-danger">{errors.role.message}</p>}
         </div>

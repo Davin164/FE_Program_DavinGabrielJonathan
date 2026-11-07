@@ -53,7 +53,8 @@ export const EventsPage: React.FC = () => {
         title="GDGoC Events & Workshops"
         description="Discover tech talks, coding bootcamps, and hackathons hosted by GDGoC UNSRI."
         actions={
-          (role === 'LEAD' || role === 'DIVISION_HEAD') && (
+          role &&
+          role !== 'MEMBER' && (
             <Link
               to="/events/new"
               className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white text-sm font-semibold rounded-xl shadow-subtle transition-colors"

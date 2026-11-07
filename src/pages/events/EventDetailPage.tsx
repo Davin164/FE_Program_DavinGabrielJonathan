@@ -35,7 +35,7 @@ export const EventDetailPage: React.FC = () => {
   const unregisterMutation = useUnregisterFromEvent();
   const deleteEventMutation = useDeleteEvent();
 
-  const isPrivileged = role === 'LEAD' || role === 'DIVISION_HEAD';
+  const isPrivileged = Boolean(role && role !== 'MEMBER');
 
   if (isEventLoading) {
     return <LoadingSpinner size="lg" className="py-24" label="Loading event details..." />;

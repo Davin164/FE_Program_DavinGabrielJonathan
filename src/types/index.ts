@@ -1,4 +1,11 @@
-export type Role = 'LEAD' | 'DIVISION_HEAD' | 'MEMBER';
+export type Role =
+  | 'LEAD'
+  | 'CO_LEAD'
+  | 'SECRETARY'
+  | 'TREASURER'
+  | 'TECHNICAL_DIVISION'
+  | 'NON_TECHNICAL_DIVISION'
+  | 'MEMBER';
 
 export interface User {
   id: string;
