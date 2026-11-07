@@ -5,14 +5,12 @@ import {
   Users,
   Calendar,
   ClipboardCheck,
-  FileText,
   UserCircle,
   X,
   LogOut,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { RoleBadge } from '../common/RoleBadge';
-import { Role } from '../../types';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -23,7 +21,6 @@ interface NavItem {
   name: string;
   href: string;
   icon: React.ElementType;
-  allowedRoles?: Role[];
 }
 
 const navItems: NavItem[] = [
@@ -48,12 +45,6 @@ const navItems: NavItem[] = [
     icon: ClipboardCheck,
   },
   {
-    name: 'Audit Logs',
-    href: '/audit-logs',
-    icon: FileText,
-    allowedRoles: ['LEAD'],
-  },
-  {
     name: 'My Profile',
     href: '/profile',
     icon: UserCircle,
@@ -61,16 +52,10 @@ const navItems: NavItem[] = [
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  const { user, role, logout } = useAuth();
-
-  const filteredNavItems = navItems.filter((item) => {
-    if (!item.allowedRoles) return true;
-    return role && item.allowedRoles.includes(role);
-  });
+  const { user, logout } = useAuth();
 
   return (
     <>
-      {/* Mobile backdrop */}
       {isOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
@@ -79,16 +64,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         />
       )}
 
-      {/* Sidebar container */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 flex flex-col w-64 bg-surface border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        {/* Brand header */}
         <div className="flex items-center justify-between h-16 px-5 border-b border-border">
           <NavLink to="/dashboard" className="flex items-center gap-3">
-            <img src="/gdgoc-logo.svg" alt="GDGoC Logo" className="w-8 h-8" />
+            <img src="/LogoGDG.webp" alt="GDGoC Logo" className="w-9 h-9 rounded-xl object-cover shadow-subtle" />
             <div className="flex flex-col">
               <span className="font-bold text-sm tracking-tight text-text-primary leading-none">
                 GDGoC UNSRI
@@ -107,7 +90,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* User preview */}
         <div className="p-4 mx-3 my-3 bg-gray-50 rounded-xl border border-border/60">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-sm">
@@ -122,9 +104,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           </div>
         </div>
 
-        {/* Navigation list */}
         <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
-          {filteredNavItems.map((item) => {
+          {navItems.map((item) => {
             const Icon = item.icon;
             return (
               <NavLink
@@ -148,7 +129,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           })}
         </nav>
 
-        {/* Footer actions */}
         <div className="p-3 border-t border-border">
           <button
             type="button"

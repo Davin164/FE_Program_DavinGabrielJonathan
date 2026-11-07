@@ -160,20 +160,20 @@ export function DataTable<T extends { id?: string | number }>({
             </button>
 
             <span className="px-2 font-medium text-text-primary">
-              Page {meta.page} of {Math.max(meta.total_pages, 1)}
+              Page {meta.page} of {Math.max(meta.totalPages ?? meta.total_pages ?? 1, 1)}
             </span>
 
             <button
               onClick={() => onPageChange?.(meta.page + 1)}
-              disabled={meta.page >= meta.total_pages}
+              disabled={meta.page >= (meta.totalPages ?? meta.total_pages ?? 1)}
               className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-30 disabled:pointer-events-none transition-colors"
               title="Next page"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
             <button
-              onClick={() => onPageChange?.(meta.total_pages)}
-              disabled={meta.page >= meta.total_pages}
+              onClick={() => onPageChange?.(meta.totalPages ?? meta.total_pages ?? 1)}
+              disabled={meta.page >= (meta.totalPages ?? meta.total_pages ?? 1)}
               className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-30 disabled:pointer-events-none transition-colors"
               title="Last page"
             >

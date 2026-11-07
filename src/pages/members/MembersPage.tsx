@@ -30,8 +30,8 @@ export const MembersPage: React.FC = () => {
     search: search || undefined,
     role: selectedRole || undefined,
     division_id: selectedDivision || undefined,
-    sort_by: sortBy,
-    sort_order: sortOrder,
+    sort: sortBy,
+    order: sortOrder,
   });
 
   const deleteMemberMutation = useDeleteMember();

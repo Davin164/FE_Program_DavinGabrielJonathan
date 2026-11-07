@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/axios';
-import { Event, ApiResponse, EventQueryParams, DashboardStats } from '../types';
+import { Event, ApiResponse, EventQueryParams } from '../types';
 import { toast } from 'sonner';
 import { getErrorMessage } from '../lib/utils';
 
@@ -36,7 +36,6 @@ export const useCreateEvent = () => {
     },
     onSuccess: (newEvent) => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
       toast.success(`Event "${newEvent.title}" created successfully!`);
     },
     onError: (err: unknown) => {
@@ -74,31 +73,10 @@ export const useDeleteEvent = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
       toast.success('Event deleted successfully');
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err));
-    },
-  });
-};
-
-export const useDashboardStats = () => {
-  return useQuery({
-    queryKey: ['dashboard-stats'],
-    queryFn: async () => {
-      try {
-        const { data } = await api.get<ApiResponse<DashboardStats>>('/dashboard/stats');
-        return data.data;
-      } catch {
-        // Fallback default stats if backend route is being set up
-        return {
-          total_members: 42,
-          active_events: 3,
-          registrations_today: 18,
-          upcoming_events: 2,
-        };
-      }
     },
   });
 };

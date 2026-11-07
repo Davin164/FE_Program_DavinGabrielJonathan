@@ -1,59 +1,41 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { useUpdateMember } from '../../hooks/useMembers';
 import { PageHeader } from '../../components/common/PageHeader';
 import { ProfileForm, ProfileFormData } from '../../components/forms/ProfileForm';
 import { RoleBadge } from '../../components/common/RoleBadge';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
-import api from '../../lib/axios';
-import { toast } from 'sonner';
-import { getErrorMessage, formatDate } from '../../lib/utils';
-import { ApiResponse, User } from '../../types';
+import { formatDate } from '../../lib/utils';
 
 export const ProfilePage: React.FC = () => {
   const { user, updateUser, refetchUser } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
+  const updateMemberMutation = useUpdateMember();
 
   if (!user) {
     return <LoadingSpinner size="lg" className="py-24" label="Loading profile..." />;
   }
 
   const handleSubmit = async (formData: ProfileFormData) => {
-    setIsLoading(true);
-    try {
-      const payload: Record<string, unknown> = {
+    const updated = await updateMemberMutation.mutateAsync({
+      id: user.id,
+      data: {
         name: formData.name,
         nim: formData.nim || undefined,
         phone: formData.phone || undefined,
-      };
+      },
+    });
 
-      if (formData.new_password) {
-        payload.current_password = formData.current_password;
-        payload.new_password = formData.new_password;
-      }
-
-      const res = await api.put<ApiResponse<User>>('/profile', payload);
-      const updated = res.data.data || {
-        ...user,
-        name: formData.name,
-        nim: formData.nim,
-        phone: formData.phone,
-      };
-
+    if (updated) {
       updateUser(updated);
-      await refetchUser();
-      toast.success('Your profile has been updated successfully!');
-    } catch (err: unknown) {
-      toast.error(getErrorMessage(err));
-    } finally {
-      setIsLoading(false);
     }
+    await refetchUser();
   };
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       <PageHeader
         title="My Profile"
-        description="Manage your account preferences, personal credentials, and password."
+        description="Manage your account preferences and personal credentials."
         breadcrumbs={[
           { label: 'Dashboard', href: '/dashboard' },
           { label: 'My Profile' },
@@ -78,7 +60,11 @@ export const ProfilePage: React.FC = () => {
       </div>
 
       {/* Profile Form */}
-      <ProfileForm user={user} onSubmit={handleSubmit} isLoading={isLoading} />
+      <ProfileForm
+        user={user}
+        onSubmit={handleSubmit}
+        isLoading={updateMemberMutation.isPending}
+      />
     </div>
   );
 };

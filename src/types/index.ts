@@ -31,8 +31,11 @@ export interface Event {
   location?: string;
   created_by: string;
   creator_name?: string;
+  registered_count?: number;
   registration_count?: number;
+  remaining_quota?: number;
   is_registered?: boolean;
+  is_checked_in?: boolean;
   is_deleted?: boolean;
   created_at: string;
   updated_at?: string;
@@ -42,6 +45,8 @@ export interface Registration {
   id: string;
   user_id: string;
   event_id: string;
+  name?: string;
+  email?: string;
   user_name?: string;
   user_email?: string;
   user_role?: Role;
@@ -53,29 +58,20 @@ export interface Attendance {
   id: string;
   user_id: string;
   event_id: string;
+  name?: string;
+  email?: string;
   user_name?: string;
   user_email?: string;
+  title?: string;
   checked_in_at: string;
-}
-
-export interface AuditLog {
-  id: string;
-  actor_id: string;
-  actor_name?: string;
-  target_id: string;
-  target_table: string;
-  action: string;
-  old_value?: Record<string, unknown> | null;
-  new_value?: Record<string, unknown> | null;
-  ip_address?: string;
-  created_at: string;
 }
 
 export interface PaginationMeta {
   total: number;
   page: number;
   limit: number;
-  total_pages: number;
+  totalPages?: number;
+  total_pages?: number;
 }
 
 export interface ApiResponse<T> {
@@ -91,32 +87,15 @@ export interface MemberQueryParams {
   search?: string;
   role?: string;
   division_id?: string;
-  sort_by?: string;
-  sort_order?: 'asc' | 'desc';
+  sort?: string;
+  order?: 'asc' | 'desc';
 }
 
 export interface EventQueryParams {
   page?: number;
   limit?: number;
   search?: string;
-  status?: 'all' | 'upcoming' | 'ongoing' | 'past';
-  sort_by?: string;
-  sort_order?: 'asc' | 'desc';
-}
-
-export interface AuditLogQueryParams {
-  page?: number;
-  limit?: number;
-  search?: string;
-  action?: string;
-  target_table?: string;
-  start_date?: string;
-  end_date?: string;
-}
-
-export interface DashboardStats {
-  total_members: number;
-  active_events: number;
-  registrations_today: number;
-  upcoming_events: number;
+  upcoming?: boolean;
+  sort?: string;
+  order?: 'asc' | 'desc';
 }

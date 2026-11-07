@@ -26,7 +26,12 @@ export const EventsPage: React.FC = () => {
 
   const { data, isLoading } = useEvents({
     search: search || undefined,
-    status: filterStatus === 'all' ? undefined : filterStatus,
+    upcoming:
+      filterStatus === 'upcoming'
+        ? true
+        : filterStatus === 'past'
+        ? false
+        : undefined,
   });
 
   const registerMutation = useRegisterForEvent();
@@ -102,14 +107,14 @@ export const EventsPage: React.FC = () => {
                 : 'text-text-secondary hover:text-text-primary'
             }`}
           >
-            Past
+            Completed
           </button>
         </div>
       </div>
 
       {/* Events Grid */}
       {isLoading ? (
-        <LoadingSpinner size="xl" className="py-24" label="Loading upcoming events..." />
+        <LoadingSpinner size="xl" className="py-24" label="Loading events..." />
       ) : events.length === 0 ? (
         <EmptyState
           icon={Calendar}
@@ -119,10 +124,11 @@ export const EventsPage: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {events.map((evt) => {
-            const regCount = evt.registration_count || 0;
+            const regCount = evt.registered_count ?? evt.registration_count ?? 0;
             const quota = evt.quota || 1;
             const percentage = Math.min(Math.round((regCount / quota) * 100), 100);
             const isFull = regCount >= quota;
+            const isPast = new Date(evt.end_time) < new Date();
             const isRegistered = evt.is_registered;
             const isActionLoading =
               (registerMutation.isPending && registerMutation.variables === evt.id) ||
@@ -140,7 +146,7 @@ export const EventsPage: React.FC = () => {
                   <div className="p-5 space-y-4">
                     {/* Header info */}
                     <div className="flex items-start justify-between gap-2">
-                      <StatusBadge status={isFull ? 'full' : 'upcoming'} />
+                      <StatusBadge status={isPast ? 'past' : isFull ? 'full' : 'upcoming'} />
                       <span className="text-[11px] text-text-secondary font-medium">
                         By {evt.creator_name || 'GDGoC Team'}
                       </span>
@@ -190,8 +196,8 @@ export const EventsPage: React.FC = () => {
                         />
                       </div>
                       <div className="flex justify-between text-[10px] text-text-secondary">
-                        <span>{quota - regCount} spots remaining</span>
-                        <span>{isFull ? 'Quota full' : 'Spots open'}</span>
+                        <span>{Math.max(0, quota - regCount)} spots remaining</span>
+                        <span>{isPast ? 'Completed' : isFull ? 'Quota full' : 'Spots open'}</span>
                       </div>
                     </div>
                   </div>
@@ -207,7 +213,7 @@ export const EventsPage: React.FC = () => {
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
 
-                  {role === 'MEMBER' && (
+                  {role === 'MEMBER' && !isPast && (
                     <button
                       type="button"
                       onClick={() => handleRegisterToggle(evt.id, isRegistered)}

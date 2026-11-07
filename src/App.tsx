@@ -19,7 +19,6 @@ import { EventsPage } from './pages/events/EventsPage';
 import { EventDetailPage } from './pages/events/EventDetailPage';
 import { EventFormPage } from './pages/events/EventFormPage';
 import { AttendancePage } from './pages/attendance/AttendancePage';
-import { AuditLogsPage } from './pages/audit-logs/AuditLogsPage';
 import { ProfilePage } from './pages/profile/ProfilePage';
 
 const queryClient = new QueryClient({
@@ -100,16 +99,6 @@ export const App: React.FC = () => {
 
                 {/* Attendance */}
                 <Route path="/attendance" element={<AttendancePage />} />
-
-                {/* Audit Logs (LEAD only) */}
-                <Route
-                  path="/audit-logs"
-                  element={
-                    <RoleGuard allowedRoles={['LEAD']}>
-                      <AuditLogsPage />
-                    </RoleGuard>
-                  }
-                />
 
                 {/* User Profile */}
                 <Route path="/profile" element={<ProfilePage />} />

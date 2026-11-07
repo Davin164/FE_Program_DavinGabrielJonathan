@@ -4,7 +4,6 @@ import { User, Division, ApiResponse, MemberQueryParams } from '../types';
 import { toast } from 'sonner';
 import { getErrorMessage } from '../lib/utils';
 
-// Fetch all members with filters
 export const useMembers = (params: MemberQueryParams = {}) => {
   return useQuery({
     queryKey: ['members', params],
@@ -15,7 +14,6 @@ export const useMembers = (params: MemberQueryParams = {}) => {
   });
 };
 
-// Fetch single member by ID
 export const useMember = (id?: string) => {
   return useQuery({
     queryKey: ['members', id],
@@ -28,30 +26,16 @@ export const useMember = (id?: string) => {
   });
 };
 
-// Fetch divisions for dropdowns
 export const useDivisions = () => {
   return useQuery({
     queryKey: ['divisions'],
     queryFn: async () => {
-      try {
-        const { data } = await api.get<ApiResponse<Division[]>>('/divisions');
-        return data.data || [];
-      } catch {
-        // Fallback standard divisions for GDGoC UNSRI
-        return [
-          { id: '1', name: 'Core Team' },
-          { id: '2', name: 'Mobile Development' },
-          { id: '3', name: 'Web Development' },
-          { id: '4', name: 'Cloud Computing' },
-          { id: '5', name: 'Machine Learning' },
-          { id: '6', name: 'Creative & Media' },
-        ];
-      }
+      const { data } = await api.get<ApiResponse<Division[]>>('/divisions');
+      return data.data || [];
     },
   });
 };
 
-// Create new member (LEAD only)
 export const useCreateMember = () => {
   const queryClient = useQueryClient();
 
@@ -62,7 +46,6 @@ export const useCreateMember = () => {
     },
     onSuccess: (newUser) => {
       queryClient.invalidateQueries({ queryKey: ['members'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
       toast.success(`Member ${newUser.name} created successfully!`);
     },
     onError: (err: unknown) => {
@@ -71,14 +54,21 @@ export const useCreateMember = () => {
   });
 };
 
-// Update member
 export const useUpdateMember = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<User> & { password?: string } }) => {
-      const res = await api.put<ApiResponse<User>>(`/members/${id}`, data);
-      return res.data.data;
+    mutationFn: async ({ id, data }: { id: string; data: Partial<User> }) => {
+      const { role, ...profileData } = data;
+      const res = await api.put<ApiResponse<User>>(`/members/${id}`, profileData);
+      let updatedUser = res.data.data;
+
+      if (role && role !== updatedUser.role) {
+        const roleRes = await api.patch<ApiResponse<User>>(`/members/${id}/role`, { role });
+        updatedUser = roleRes.data.data;
+      }
+
+      return updatedUser;
     },
     onSuccess: (updatedUser) => {
       queryClient.invalidateQueries({ queryKey: ['members'] });
@@ -91,7 +81,6 @@ export const useUpdateMember = () => {
   });
 };
 
-// Soft delete member
 export const useDeleteMember = () => {
   const queryClient = useQueryClient();
 
@@ -102,7 +91,6 @@ export const useDeleteMember = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['members'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
       toast.success('Member removed successfully');
     },
     onError: (err: unknown) => {

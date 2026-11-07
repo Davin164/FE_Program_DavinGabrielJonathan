@@ -11,7 +11,7 @@ const memberFormSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   password: z
     .string()
-    .min(6, 'Password must be at least 6 characters')
+    .min(8, 'Password must be at least 8 characters')
     .optional()
     .or(z.literal('')),
   role: z.enum(['LEAD', 'DIVISION_HEAD', 'MEMBER']),
@@ -74,32 +74,39 @@ export const MemberForm: React.FC<MemberFormProps> = ({
         </div>
 
         {/* Email */}
-        <div>
+        <div className={isEdit ? 'md:col-span-2' : ''}>
           <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
-            Email Address *
+            Email Address {isEdit ? '(Fixed)' : '*'}
           </label>
           <input
             type="email"
             {...register('email')}
+            disabled={isEdit}
             placeholder="e.g. member@unsri.ac.id"
-            className="w-full px-3.5 py-2.5 text-sm bg-surface border border-border rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-subtle"
+            className={`w-full px-3.5 py-2.5 text-sm border border-border rounded-xl shadow-subtle ${
+              isEdit
+                ? 'bg-gray-50 text-text-secondary cursor-not-allowed'
+                : 'bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary'
+            }`}
           />
           {errors.email && <p className="mt-1 text-xs text-danger">{errors.email.message}</p>}
         </div>
 
-        {/* Password */}
-        <div>
-          <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
-            {isEdit ? 'New Password (leave empty to keep current)' : 'Password *'}
-          </label>
-          <input
-            type="password"
-            {...register('password')}
-            placeholder={isEdit ? '••••••••' : 'Minimum 6 characters'}
-            className="w-full px-3.5 py-2.5 text-sm bg-surface border border-border rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-subtle"
-          />
-          {errors.password && <p className="mt-1 text-xs text-danger">{errors.password.message}</p>}
-        </div>
+        {/* Password (only when creating a new member) */}
+        {!isEdit && (
+          <div>
+            <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+              Password *
+            </label>
+            <input
+              type="password"
+              {...register('password')}
+              placeholder="Minimum 8 characters"
+              className="w-full px-3.5 py-2.5 text-sm bg-surface border border-border rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-subtle"
+            />
+            {errors.password && <p className="mt-1 text-xs text-danger">{errors.password.message}</p>}
+          </div>
+        )}
 
         {/* Role */}
         <div>

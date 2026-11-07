@@ -28,7 +28,6 @@ export const useRegisterForEvent = () => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
       queryClient.invalidateQueries({ queryKey: ['events', eventId] });
       queryClient.invalidateQueries({ queryKey: ['registrations', eventId] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
       toast.success('Successfully registered for this event!');
     },
     onError: (err: unknown) => {
@@ -49,7 +48,6 @@ export const useUnregisterFromEvent = () => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
       queryClient.invalidateQueries({ queryKey: ['events', eventId] });
       queryClient.invalidateQueries({ queryKey: ['registrations', eventId] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
       toast.info('You have cancelled your registration.');
     },
     onError: (err: unknown) => {
