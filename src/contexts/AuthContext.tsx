@@ -97,8 +97,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           });
           const authPayload = res.data.data || res.data;
           setAuthData(
-            authPayload.access_token || session.access_token,
-            authPayload.refresh_token,
+            authPayload.accessToken || authPayload.access_token || session.access_token,
+            authPayload.refreshToken || authPayload.refresh_token || session.refresh_token || '',
             authPayload.user
           );
           toast.success('Logged in with Google successfully!');

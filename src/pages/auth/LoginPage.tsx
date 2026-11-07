@@ -65,7 +65,7 @@ export const LoginPage: React.FC = () => {
       <div className="w-full max-w-md bg-surface rounded-3xl border border-border p-8 shadow-card">
         {/* Header */}
         <div className="flex flex-col items-center text-center">
-          <img src="/gdgoc-logo.svg" alt="GDGoC Logo" className="w-14 h-14 mb-3" />
+          <img src="/LogoGDG.webp" alt="GDGoC Logo" className="w-16 h-16 mb-3 rounded-2xl object-cover shadow-subtle" />
           <h1 className="text-2xl font-bold text-text-primary tracking-tight">GDGoC UNSRI</h1>
           <p className="text-xs font-medium text-text-secondary mt-1">
             Google Developer Groups on Campus • Universitas Sriwijaya

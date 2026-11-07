@@ -1,22 +1,22 @@
 # GDGoC UNSRI Management System — Front-End Application
 
 > **Google Developer Groups on Campus (GDGoC) Universitas Sriwijaya**  
-> Complete Front-End Management Web Application built with React 18, TypeScript, Vite, Tailwind CSS, TanStack Query, and Supabase Auth.
+> Full-Stack Management Web Application built with React 18, TypeScript, Vite, Tailwind CSS, TanStack Query, and Supabase Auth.
 
 ---
 
 ## 🎨 GDGoC UNSRI Brand Palette
 
-| Color Role | Hex Code | Google Brand Color | Preview |
-| :--- | :--- | :--- | :--- |
-| **Primary** | `#4285F4` | Google Blue | ![#4285F4](https://via.placeholder.com/15/4285F4/000000?text=+) `#4285F4` |
-| **Secondary** | `#34A853` | Google Green | ![#34A853](https://via.placeholder.com/15/34A853/000000?text=+) `#34A853` |
-| **Accent / Danger** | `#EA4335` | Google Red | ![#EA4335](https://via.placeholder.com/15/EA4335/000000?text=+) `#EA4335` |
-| **Warning** | `#FBBC04` | Google Yellow | ![#FBBC04](https://via.placeholder.com/15/FBBC04/000000?text=+) `#FBBC04` |
-| **Background** | `#F8F9FA` | Google Light Gray | `#F8F9FA` |
-| **Surface** | `#FFFFFF` | Pure White | `#FFFFFF` |
-| **Text Primary** | `#202124` | Dark Charcoal | `#202124` |
-| **Text Secondary** | `#5F6368` | Slate Muted Gray | `#5F6368` |
+| Color Role | Hex Code | Google Brand Color |
+| :--- | :--- | :--- |
+| **Primary** | `#4285F4` | Google Blue |
+| **Secondary** | `#34A853` | Google Green |
+| **Accent / Danger** | `#EA4335` | Google Red |
+| **Warning** | `#FBBC04` | Google Yellow |
+| **Background** | `#F8F9FA` | Google Light Gray |
+| **Surface** | `#FFFFFF` | Pure White |
+| **Text Primary** | `#202124` | Dark Charcoal |
+| **Text Secondary** | `#5F6368` | Slate Muted Gray |
 
 ---
 
@@ -24,30 +24,24 @@
 
 - **Framework**: [React 18](https://react.dev/) + [TypeScript 5](https://www.typescriptlang.org/) via [Vite](https://vitejs.dev/)
 - **Styling**: [Tailwind CSS v3](https://tailwindcss.com/)
-- **Routing**: [React Router DOM v6](https://reactrouter.com/) (with Nested Layouts, Protected Routes, and Role Guards)
-- **Data & Server State**: [TanStack Query v5](https://tanstack.com/query/latest) (React Query)
+- **Routing**: [React Router DOM v6](https://reactrouter.com/) (Nested Layouts, Protected Routes, Role Guards)
+- **Server State**: [TanStack Query v5](https://tanstack.com/query/latest) (React Query)
 - **Forms & Validation**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
-- **Authentication**: [Supabase](https://supabase.com/) (Google OAuth + Email/Password) + JWT token management
-- **HTTP Client**: [Axios](https://axios-http.com/) with request/response interceptors (Auto JWT attachment and Refresh Token rotation queue)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Notifications**: [Sonner](https://sonner.emilkowal.ski/)
-- **Date Utilities**: [date-fns v3](https://date-fns.org/)
-- **Deployment**: Vercel ready
+- **BaaS & Auth**: [Supabase](https://supabase.com/) (Google OAuth + Cloud PostgreSQL) + JWT Token Management
+- **HTTP Client**: [Axios](https://axios-http.com/) with Request/Response Interceptors (Auto Bearer attachment & Refresh Token rotation queue)
+- **Icons & UI**: [Lucide React](https://lucide.dev/) & [Sonner](https://sonner.emilkowal.ski/)
+- **Deployment**: [Vercel](https://vercel.com/) (`vercel.json` SPA rewrites configured)
 
 ---
 
-## 🔐 Role-Based Access Control (RBAC)
+## 🔐 Role-Based Access Control (RBAC) & Test Accounts
 
-The system enforces strict client-side role guards paired with backend verification:
-
-| Feature / Page | LEAD | DIVISION_HEAD | MEMBER |
-| :--- | :---: | :---: | :---: |
-| **Dashboard Statistics** | Full Chapter Stats | Chapter Stats | Personal / Event Stats |
-| **Member Directory** | View, Add, Edit, Delete | View Directory | View Directory |
-| **Events & Workshops** | View, Create, Edit, Delete | View, Create, Edit | View, Register / Unregister |
-| **Attendance Check-in** | View Roster & Validate | View Roster & Validate | Self Check-in to Live Session |
-| **Security Audit Logs** | ✅ Full Access & Diff | ❌ Restricted (403) | ❌ Restricted (403) |
-| **Profile Management** | Edit Own Profile | Edit Own Profile | Edit Own Profile |
+| Role | Email | Password | Capabilities |
+| :--- | :--- | :--- | :--- |
+| **LEAD** | `lead@gdgoc.unsri.ac.id` | `Password123!` | Full chapter stats, add/edit/soft-delete members, promote/demote roles, create/edit/delete events, view attendance roster |
+| **DIVISION_HEAD** | `techhead@gdgoc.unsri.ac.id` | `Password123!` | View member directory, create/edit division events, view event registrations & live attendance roster |
+| **MEMBER** | `davin@gdgoc.unsri.ac.id` | `Password123!` | View dashboard & upcoming events, register/cancel event registration, self check-in during live event window, edit own profile |
+| **MEMBER** | `member2@gdgoc.unsri.ac.id` | `Password123!` | Secondary member account for testing quota & registration concurrency |
 
 ---
 
@@ -55,12 +49,14 @@ The system enforces strict client-side role guards paired with backend verificat
 
 ```
 FE_Program_DavinGabrielJonathan/
+├── public/
+│   └── LogoGDG.webp                    # Official GDGoC UNSRI chapter logo
 ├── src/
 │   ├── components/
 │   │   ├── common/
-│   │   │   ├── ConfirmDialog.tsx       # Reusable alert modal for sensitive actions
-│   │   │   ├── DataTable.tsx           # Sortable, paginated, responsive data table
-│   │   │   ├── EmptyState.tsx          # Clean SVG empty states with actionable buttons
+│   │   │   ├── ConfirmDialog.tsx       # Reusable alert modal for destructive actions
+│   │   │   ├── DataTable.tsx           # Generic sortable, paginated, responsive data table
+│   │   │   ├── EmptyState.tsx          # Clean empty states with actionable buttons
 │   │   │   ├── ErrorBoundary.tsx       # Catch unhandled UI exceptions gracefully
 │   │   │   ├── LoadingSpinner.tsx      # Standardized animated loaders
 │   │   │   ├── PageHeader.tsx          # Header with breadcrumbs and action triggers
@@ -68,119 +64,106 @@ FE_Program_DavinGabrielJonathan/
 │   │   │   ├── RoleBadge.tsx           # Role-based colored chips (LEAD, DIV_HEAD, MEMBER)
 │   │   │   ├── RoleGuard.tsx           # 403 Forbidden protection component
 │   │   │   ├── SearchInput.tsx         # Debounced search bar with instant clear
-│   │   │   └── StatusBadge.tsx         # Event state badges (Upcoming, Live, Full, Past)
+│   │   │   └── StatusBadge.tsx         # Event state badges (Upcoming, Live Now, Full, Completed)
 │   │   ├── forms/
 │   │   │   ├── EventForm.tsx           # React Hook Form + Zod for event creation/edit
 │   │   │   ├── MemberForm.tsx          # React Hook Form + Zod for member creation/edit
-│   │   │   └── ProfileForm.tsx         # Form for profile & password updating
+│   │   │   └── ProfileForm.tsx         # Form for personal profile credentials
 │   │   └── layout/
 │   │       ├── AppLayout.tsx           # Master layout with responsive sidebar & navbar
 │   │       ├── Navbar.tsx              # Top bar with user profile dropdown & logout
 │   │       └── Sidebar.tsx             # Collapsible navigation drawer
 │   ├── contexts/
-│   │   └── AuthContext.tsx             # Global auth state, Supabase listener, token storage
+│   │   └── AuthContext.tsx             # Global auth state, Supabase OAuth listener, token storage
 │   ├── hooks/
 │   │   ├── useAttendances.ts           # React Query hooks for attendance check-ins
-│   │   ├── useAuditLogs.ts             # React Query hooks for security logs
-│   │   ├── useAuth.ts                  # Context consumption helper
-│   │   ├── useEvents.ts                # React Query hooks for event CRUD & stats
-│   │   ├── useMembers.ts               # React Query hooks for member CRUD & divisions
+│   │   ├── useAuth.ts                  # Auth context consumption hook
+│   │   ├── useEvents.ts                # React Query hooks for event CRUD
+│   │   ├── useMembers.ts               # React Query hooks for member CRUD, role mutation & divisions
 │   │   └── useRegistrations.ts         # React Query hooks for event registrations
 │   ├── lib/
-│   │   ├── axios.ts                    # Axios instance with 401 refresh token interceptor
-│   │   ├── supabase.ts                 # Supabase client initialization
-│   │   └── utils.ts                    # Date formatters, initials generator, cn()
+│   │   ├── axios.ts                    # Axios instance with 401 refresh token rotation interceptor
+│   │   ├── supabase.ts                 # Supabase BaaS client initialization
+│   │   └── utils.ts                    # Date formatters, initials generator, error parser, cn()
 │   ├── pages/
 │   │   ├── attendance/
-│   │   │   └── AttendancePage.tsx      # Check-in interface & attendee roster
-│   │   ├── audit-logs/
-│   │   │   └── AuditLogsPage.tsx       # Security audit log table with JSON diff modal
+│   │   │   └── AttendancePage.tsx      # Self check-in interface & live attendee roster
 │   │   ├── auth/
-│   │   │   ├── LoginPage.tsx           # Email/password + Google OAuth login
+│   │   │   ├── LoginPage.tsx           # Email/password + Google OAuth login via Supabase
 │   │   │   └── RegisterPage.tsx        # Member registration form
 │   │   ├── dashboard/
-│   │   │   └── DashboardPage.tsx       # Overview metrics & quick action hub
+│   │   │   └── DashboardPage.tsx       # Chapter metrics (Members, Completed & Upcoming Events)
 │   │   ├── events/
-│   │   │   ├── EventDetailPage.tsx     # Quota progress, registration & roster
-│   │   │   ├── EventFormPage.tsx       # Create / edit event wrapper
-│   │   │   └── EventsPage.tsx          # Card grid view with search & status filters
+│   │   │   ├── EventDetailPage.tsx     # Quota progress, registration & attendee roster
+│   │   │   ├── EventFormPage.tsx       # Create / edit event page
+│   │   │   └── EventsPage.tsx          # Card grid view with search & Upcoming/Completed filters
 │   │   ├── members/
-│   │   │   ├── MemberDetailPage.tsx   # Detailed member academic & chapter view
-│   │   │   ├── MemberFormPage.tsx      # Add / edit member form
-│   │   │   └── MembersPage.tsx         # Directory with server sort, search & filters
+│   │   │   ├── MemberDetailPage.tsx    # Detailed member academic & chapter view
+│   │   │   ├── MemberFormPage.tsx      # Add / edit member page (LEAD only)
+│   │   │   └── MembersPage.tsx         # Directory with server sort, search, filter & pagination
 │   │   └── profile/
-│   │       └── ProfilePage.tsx         # Personal settings & password management
+│   │       └── ProfilePage.tsx         # Personal profile settings
 │   ├── constants/
-│   │   └── index.ts                    # Routes, role constants, storage keys
+│   │   └── index.ts                    # API endpoints, role labels, storage keys
 │   ├── types/
-│   │   └── index.ts                    # Full TypeScript interfaces and payload types
-│   ├── App.tsx                         # Router configuration, providers & routes
-│   ├── index.css                       # Tailwind directives, custom scrollbars
-│   └── main.tsx                        # React 18 DOM mount point
-├── public/
-│   └── gdgoc-logo.svg                  # SVG logo for GDGoC UNSRI
+│   │   └── index.ts                    # Strict TypeScript interfaces & API contracts
+│   ├── App.tsx                         # Router configuration, QueryClient & route guards
+│   ├── index.css                       # Tailwind directives & custom subtle scrollbars
+│   └── main.tsx                        # React 18 DOM entry point
 ├── .env.example                        # Template for environment variables
-├── .gitignore
-├── index.html
+├── vercel.json                         # SPA client-side routing rewrite rules for Vercel
 ├── package.json
-├── postcss.config.js
-├── tailwind.config.ts
-├── tsconfig.json
-├── tsconfig.node.json
-├── vite.config.ts
 └── README.md
 ```
 
 ---
 
-## ⚙️ Installation & Setup
+## ⚙️ Installation & Local Setup
 
 ### 1. Prerequisites
 - **Node.js** >= 18.0.0
-- **npm**, **pnpm**, or **yarn**
+- Running Back-End API (`http://localhost:3000/api` or deployed API URL)
 
 ### 2. Install Dependencies
 ```bash
-cd Soal2_CaseStudy/FE_Program_DavinGabrielJonathan
 npm install
 ```
 
-### 3. Environment Variables
+### 3. Configure Environment Variables
 Copy `.env.example` to `.env`:
 ```bash
 cp .env.example .env
 ```
-Update values as required:
+Fill in the configuration values:
 ```env
 VITE_API_URL=http://localhost:3000/api
-VITE_SUPABASE_URL=https://your-supabase-project.supabase.co
+VITE_SUPABASE_URL=https://your-project-ref.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
 
-### 4. Run Development Server
+### 4. Start Development Server
 ```bash
 npm run dev
 ```
-Open your browser at `http://localhost:5173`.
+Open `http://localhost:5173` in your browser.
 
-### 5. Production Build
+### 5. Build for Production
 ```bash
 npm run build
 ```
-Verify the build locally:
-```bash
-npm run preview
-```
 
 ---
 
-## 💡 Key Design & Implementation Decisions
+## 🌐 Deploying to Vercel & Supabase BaaS
 
-1. **Robust Token Refresh Interceptor**: The Axios interceptor uses a queue-based token refresh mechanism to handle concurrent 401 responses smoothly without duplicate refresh requests.
-2. **Graceful Fallbacks**: When backend endpoints are starting up or offline, essential dropdowns (such as Divisions and default dashboard stats) provide sensible fallback data so UI testing and navigation are never blocked.
-3. **Strict TypeScript & Schema Validation**: 100% of forms utilize Zod schemas with strong type inference, eliminating `any` types across the entire application.
-4. **Rich Interactive Feedback**: Real-time feedback via Sonner toast notifications, optimistic UI invalidations via TanStack Query, and confirmation dialogs for destructive actions.
-5. **Mobile-First Responsive Design**: Full drawer sidebar support for mobile and tablet screens, responsive grid views for event cards, and horizontal scroll tables with custom subtle scrollbars.
+1. **GitHub Repository**: [https://github.com/Davin164/FE_Program_DavinGabrielJonathan](https://github.com/Davin164/FE_Program_DavinGabrielJonathan)
+2. In **Supabase Dashboard**:
+   - Copy **Project URL** (`VITE_SUPABASE_URL`) and **anon public key** (`VITE_SUPABASE_ANON_KEY`) from *Project Settings -> API*.
+   - Enable **Google Provider** under *Authentication -> Providers -> Google* and add your Vercel domain (`https://your-app.vercel.app/dashboard`) to *Redirect URLs*.
+3. In **Vercel Dashboard**:
+   - Import the GitHub repository (`Framework Preset: Vite`).
+   - Add Environment Variables: `VITE_API_URL`, `VITE_SUPABASE_URL`, and `VITE_SUPABASE_ANON_KEY`.
+   - Click **Deploy**. `vercel.json` automatically handles SPA route refreshes.
 
 ---
-**Developed for GDGoC UNSRI Selection — Davin Gabriel Jonathan**
+**Developed for GDGoC UNSRI Core Team Selection — Davin Gabriel Jonathan**

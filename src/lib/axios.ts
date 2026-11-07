@@ -79,7 +79,7 @@ api.interceptors.response.use(
         }
 
         const { data } = await axios.post(`${baseURL}/auth/refresh`, {
-          refresh_token: refreshToken,
+          refreshToken,
         });
 
         const newAccessToken =
@@ -89,8 +89,10 @@ api.interceptors.response.use(
         }
 
         localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, newAccessToken);
-        if (data.data?.refresh_token) {
-          localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, data.data.refresh_token);
+        const newRefreshToken =
+          data.data?.refreshToken || data.data?.refresh_token || data.refreshToken || data.refresh_token;
+        if (newRefreshToken) {
+          localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, newRefreshToken);
         }
 
         if (originalRequest.headers) {
