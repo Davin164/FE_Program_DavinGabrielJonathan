@@ -156,7 +156,7 @@ npm run build
 
 ## 🌐 Deploying to Vercel & Supabase BaaS
 
-1. Push repository to GitHub (public visibility).
+1. **GitHub Repository**: [https://github.com/Davin164/FE_Program_DavinGabrielJonathan](https://github.com/Davin164/FE_Program_DavinGabrielJonathan)
 2. In **Supabase Dashboard**:
    - Copy **Project URL** (`VITE_SUPABASE_URL`) and **anon public key** (`VITE_SUPABASE_ANON_KEY`) from *Project Settings -> API*.
    - Enable **Google Provider** under *Authentication -> Providers -> Google* and add your Vercel domain (`https://your-app.vercel.app/dashboard`) to *Redirect URLs*.
