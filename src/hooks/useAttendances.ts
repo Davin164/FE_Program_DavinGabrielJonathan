@@ -1,16 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '../lib/axios';
-import { Attendance, ApiResponse } from '../types';
+import { supabaseService } from '../services/supabaseService';
+import { useAuth } from './useAuth';
+import { Attendance } from '../types';
 import { toast } from 'sonner';
 import { getErrorMessage } from '../lib/utils';
 
 export const useEventAttendances = (eventId?: string) => {
   return useQuery({
     queryKey: ['attendances', eventId],
-    queryFn: async () => {
+    queryFn: async (): Promise<Attendance[]> => {
       if (!eventId) return [];
-      const { data } = await api.get<ApiResponse<Attendance[]>>(`/events/${eventId}/attendances`);
-      return data.data || [];
+      return supabaseService.attendances.getByEvent(eventId);
     },
     enabled: Boolean(eventId),
   });
@@ -18,15 +18,17 @@ export const useEventAttendances = (eventId?: string) => {
 
 export const useCheckIn = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async (eventId: string) => {
-      const { data } = await api.post<ApiResponse<Attendance>>(`/events/${eventId}/checkin`);
-      return data.data;
+      if (!user?.id) throw new Error('You must be logged in to check in');
+      return supabaseService.attendances.checkIn(eventId, user.id);
     },
     onSuccess: (_, eventId) => {
       queryClient.invalidateQueries({ queryKey: ['attendances', eventId] });
       queryClient.invalidateQueries({ queryKey: ['my-attendances'] });
+      queryClient.invalidateQueries({ queryKey: ['events'] });
       toast.success('Check-in confirmed! Your attendance has been recorded.');
     },
     onError: (err: unknown) => {
@@ -36,11 +38,14 @@ export const useCheckIn = () => {
 };
 
 export const useMyAttendances = () => {
+  const { user } = useAuth();
+
   return useQuery({
-    queryKey: ['my-attendances'],
-    queryFn: async () => {
-      const { data } = await api.get<ApiResponse<Attendance[]>>('/attendances/my');
-      return data.data || [];
+    queryKey: ['my-attendances', user?.id],
+    queryFn: async (): Promise<Attendance[]> => {
+      if (!user?.id) return [];
+      return supabaseService.attendances.getMyAttendances(user.id);
     },
+    enabled: Boolean(user?.id),
   });
 };

@@ -1,8 +1,8 @@
 import React, { createContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { User, Role } from '../types';
 import { STORAGE_KEYS } from '../constants';
-import api from '../lib/axios';
 import { supabase } from '../lib/supabase';
+import { supabaseService } from '../services/supabaseService';
 import { toast } from 'sonner';
 
 interface AuthContextType {
@@ -61,22 +61,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser(null);
   };
 
-  // Fetch current user from /auth/me
+  // Fetch current user from Supabase
   const fetchCurrentUser = useCallback(async () => {
-    const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
-    if (!token) {
+    const cached = localStorage.getItem(STORAGE_KEYS.USER);
+    if (!cached) {
       setIsLoading(false);
       return;
     }
 
     try {
-      const response = await api.get('/auth/me');
-      const userData = response.data.data || response.data;
-      setUser(userData);
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(userData));
-    } catch (error) {
-      console.warn('Failed to fetch current user profile:', error);
-      // If 401 or invalid token, axios interceptor handles or token removed
+      const parsed: User = JSON.parse(cached);
+      if (parsed.id) {
+        const freshUser = await supabaseService.auth.getMe(parsed.id);
+        setUser(freshUser);
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(freshUser));
+      }
+    } catch {
+      // Keep cached user if offline or network issue
     } finally {
       setIsLoading(false);
     }
@@ -85,35 +86,59 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     fetchCurrentUser();
 
-    // Listen for Supabase OAuth redirect if applicable
+    // Listen for Supabase OAuth redirect (Google Sign-In)
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session) {
+      if (event === 'SIGNED_IN' && session?.user?.email) {
         try {
-          // Exchange Supabase token with our backend
-          const res = await api.post('/auth/google', {
-            supabase_token: session.access_token,
-            email: session.user.email,
-            name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0],
-          });
-          const authPayload = res.data.data || res.data;
-          setAuthData(
-            authPayload.accessToken || authPayload.access_token || session.access_token,
-            authPayload.refreshToken || authPayload.refresh_token || session.refresh_token || '',
-            authPayload.user
-          );
-          toast.success('Logged in with Google successfully!');
-        } catch {
-          // Fallback if backend does not yet support /auth/google endpoint:
-          // Synthesize user object from Supabase session
-          const fallbackUser: User = {
-            id: session.user.id,
-            email: session.user.email || '',
-            name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Member',
-            role: 'MEMBER',
-            created_at: session.user.created_at,
-          };
-          setAuthData(session.access_token, session.refresh_token || '', fallbackUser);
-          toast.success('Signed in via Google account');
+          // Check if Google user exists in public.users
+          const { data: existingUser } = await supabase
+            .from('users')
+            .select('*, division:divisions(id, name)')
+            .eq('email', session.user.email)
+            .maybeSingle();
+
+          let appUser: User;
+          if (existingUser) {
+            appUser = {
+              id: existingUser.id,
+              email: existingUser.email,
+              name: existingUser.name,
+              role: existingUser.role as Role,
+              division_id: existingUser.division_id,
+              division_name: existingUser.division?.name || null,
+              nim: existingUser.nim,
+              phone: existingUser.phone,
+              created_at: existingUser.created_at,
+              updated_at: existingUser.updated_at,
+            };
+          } else {
+            // Auto-provision Google account as MEMBER
+            const { data: newUser } = await supabase
+              .from('users')
+              .insert({
+                email: session.user.email,
+                name: session.user.user_metadata?.full_name || session.user.email.split('@')[0],
+                password_hash: 'GOOGLE_OAUTH_LOGIN',
+                role: 'MEMBER',
+              })
+              .select('*, division:divisions(id, name)')
+              .single();
+
+            appUser = {
+              id: newUser?.id || session.user.id,
+              email: newUser?.email || session.user.email,
+              name: newUser?.name || 'Member',
+              role: (newUser?.role as Role) || 'MEMBER',
+              division_id: newUser?.division_id,
+              division_name: newUser?.division?.name || null,
+              created_at: newUser?.created_at || session.user.created_at,
+            };
+          }
+
+          setAuthData(session.access_token, session.refresh_token, appUser);
+          toast.success(`Signed in with Google as ${appUser.name}`);
+        } catch (err: unknown) {
+          console.error('Google OAuth sync error:', err);
         }
       }
     });
@@ -126,13 +151,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const response = await api.post('/auth/login', { email, password });
-      const { data } = response.data;
-      const token = data.accessToken || data.access_token || data.token;
-      const refreshToken = data.refreshToken || data.refresh_token;
-      const userData: User = data.user;
-
-      setAuthData(token, refreshToken, userData);
+      const { user: userData, token } = await supabaseService.auth.login(email, password);
+      setAuthData(token, undefined, userData);
       toast.success(`Welcome back, ${userData.name}!`);
     } finally {
       setIsLoading(false);
@@ -149,13 +169,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }) => {
     setIsLoading(true);
     try {
-      const response = await api.post('/auth/register', payload);
-      const { data } = response.data;
-      const token = data.accessToken || data.access_token || data.token;
-      const refreshToken = data.refreshToken || data.refresh_token;
-      const userData: User = data.user;
-
-      setAuthData(token, refreshToken, userData);
+      const { user: userData, token } = await supabaseService.auth.register(payload);
+      setAuthData(token, undefined, userData);
       toast.success('Registration successful! Welcome to GDGoC UNSRI.');
     } finally {
       setIsLoading(false);
@@ -163,52 +178,68 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const loginWithGoogle = async () => {
+    setIsLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: window.location.origin + '/dashboard',
+          queryParams: {
+            prompt: 'select_account',
+          },
         },
       });
-      if (error) throw error;
+
+      if (error) {
+        throw new Error(error.message);
+      }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Google OAuth failed';
+      const msg = err instanceof Error ? err.message : 'Google login failed';
       toast.error(msg);
-      throw err;
+      setIsLoading(false);
     }
   };
 
   const logout = async () => {
+    clearAuthData();
+    await supabase.auth.signOut().catch(() => {});
+    toast.success('You have been signed out.');
+  };
+
+  const updateUser = (updatedUser: Partial<User>) => {
+    if (!user) return;
+    const merged = { ...user, ...updatedUser };
+    setUser(merged);
+    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(merged));
+  };
+
+  const refetchUser = async () => {
+    if (!user?.id) return;
     try {
-      await api.post('/auth/logout').catch(() => {});
-      await supabase.auth.signOut().catch(() => {});
-    } finally {
-      clearAuthData();
-      toast.info('You have been logged out.');
-      window.location.href = '/login';
+      const freshUser = await supabaseService.auth.getMe(user.id);
+      setUser(freshUser);
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(freshUser));
+    } catch (error) {
+      console.warn('Failed to refetch user:', error);
     }
   };
 
-  const updateUser = (updatedFields: Partial<User>) => {
-    if (!user) return;
-    const updated = { ...user, ...updatedFields };
-    setUser(updated);
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(updated));
-  };
+  const isAuthenticated = Boolean(user && localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN));
+  const role: Role | null = user?.role || null;
 
   return (
     <AuthContext.Provider
       value={{
         user,
         isLoading,
-        isAuthenticated: !!user,
-        role: user?.role || null,
+        isAuthenticated,
+        role,
         login,
         register,
         loginWithGoogle,
         logout,
         updateUser,
-        refetchUser: fetchCurrentUser,
+        refetchUser,
       }}
     >
       {children}

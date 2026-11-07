@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '../lib/axios';
-import { User, Division, ApiResponse, MemberQueryParams } from '../types';
+import { supabaseService } from '../services/supabaseService';
+import { User, MemberQueryParams } from '../types';
 import { toast } from 'sonner';
 import { getErrorMessage } from '../lib/utils';
 
@@ -8,8 +8,7 @@ export const useMembers = (params: MemberQueryParams = {}) => {
   return useQuery({
     queryKey: ['members', params],
     queryFn: async () => {
-      const { data } = await api.get<ApiResponse<User[]>>('/members', { params });
-      return data;
+      return supabaseService.members.getAll(params);
     },
   });
 };
@@ -19,8 +18,7 @@ export const useMember = (id?: string) => {
     queryKey: ['members', id],
     queryFn: async () => {
       if (!id) throw new Error('Member ID is required');
-      const { data } = await api.get<ApiResponse<User>>(`/members/${id}`);
-      return data.data;
+      return supabaseService.members.getById(id);
     },
     enabled: Boolean(id),
   });
@@ -30,8 +28,7 @@ export const useDivisions = () => {
   return useQuery({
     queryKey: ['divisions'],
     queryFn: async () => {
-      const { data } = await api.get<ApiResponse<Division[]>>('/divisions');
-      return data.data || [];
+      return supabaseService.members.getDivisions();
     },
   });
 };
@@ -41,8 +38,7 @@ export const useCreateMember = () => {
 
   return useMutation({
     mutationFn: async (payload: Partial<User> & { password?: string }) => {
-      const { data } = await api.post<ApiResponse<User>>('/members', payload);
-      return data.data;
+      return supabaseService.members.create(payload);
     },
     onSuccess: (newUser) => {
       queryClient.invalidateQueries({ queryKey: ['members'] });
@@ -59,16 +55,7 @@ export const useUpdateMember = () => {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<User> }) => {
-      const { role, ...profileData } = data;
-      const res = await api.put<ApiResponse<User>>(`/members/${id}`, profileData);
-      let updatedUser = res.data.data;
-
-      if (role && role !== updatedUser.role) {
-        const roleRes = await api.patch<ApiResponse<User>>(`/members/${id}/role`, { role });
-        updatedUser = roleRes.data.data;
-      }
-
-      return updatedUser;
+      return supabaseService.members.update(id, data);
     },
     onSuccess: (updatedUser) => {
       queryClient.invalidateQueries({ queryKey: ['members'] });
@@ -86,8 +73,7 @@ export const useDeleteMember = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data } = await api.delete<ApiResponse<{ message: string }>>(`/members/${id}`);
-      return data;
+      return supabaseService.members.delete(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['members'] });

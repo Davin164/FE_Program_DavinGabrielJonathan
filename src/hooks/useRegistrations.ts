@@ -1,16 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '../lib/axios';
-import { Registration, ApiResponse } from '../types';
+import { supabaseService } from '../services/supabaseService';
+import { useAuth } from './useAuth';
+import { Registration } from '../types';
 import { toast } from 'sonner';
 import { getErrorMessage } from '../lib/utils';
 
 export const useEventRegistrations = (eventId?: string) => {
   return useQuery({
     queryKey: ['registrations', eventId],
-    queryFn: async () => {
+    queryFn: async (): Promise<Registration[]> => {
       if (!eventId) return [];
-      const { data } = await api.get<ApiResponse<Registration[]>>(`/events/${eventId}/registrations`);
-      return data.data || [];
+      return supabaseService.registrations.getByEvent(eventId);
     },
     enabled: Boolean(eventId),
   });
@@ -18,11 +18,12 @@ export const useEventRegistrations = (eventId?: string) => {
 
 export const useRegisterForEvent = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async (eventId: string) => {
-      const { data } = await api.post<ApiResponse<Registration>>(`/events/${eventId}/register`);
-      return data.data;
+      if (!user?.id) throw new Error('You must be logged in to register for an event');
+      return supabaseService.registrations.register(eventId, user.id);
     },
     onSuccess: (_, eventId) => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
@@ -38,17 +39,18 @@ export const useRegisterForEvent = () => {
 
 export const useUnregisterFromEvent = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async (eventId: string) => {
-      const { data } = await api.delete<ApiResponse<{ message: string }>>(`/events/${eventId}/register`);
-      return data;
+      if (!user?.id) throw new Error('You must be logged in');
+      return supabaseService.registrations.unregister(eventId, user.id);
     },
     onSuccess: (_, eventId) => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
       queryClient.invalidateQueries({ queryKey: ['events', eventId] });
       queryClient.invalidateQueries({ queryKey: ['registrations', eventId] });
-      toast.info('You have cancelled your registration.');
+      toast.success('Registration cancelled successfully');
     },
     onError: (err: unknown) => {
       toast.error(getErrorMessage(err));

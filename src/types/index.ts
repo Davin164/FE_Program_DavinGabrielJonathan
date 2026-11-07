@@ -102,6 +102,7 @@ export interface EventQueryParams {
   page?: number;
   limit?: number;
   search?: string;
+  status?: string;
   upcoming?: boolean;
   sort?: string;
   order?: 'asc' | 'desc';

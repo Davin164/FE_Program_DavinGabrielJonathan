@@ -1,26 +1,29 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '../lib/axios';
-import { Event, ApiResponse, EventQueryParams } from '../types';
+import { supabaseService } from '../services/supabaseService';
+import { useAuth } from './useAuth';
+import { Event, EventQueryParams } from '../types';
 import { toast } from 'sonner';
 import { getErrorMessage } from '../lib/utils';
 
 export const useEvents = (params: EventQueryParams = {}) => {
+  const { user } = useAuth();
+
   return useQuery({
-    queryKey: ['events', params],
+    queryKey: ['events', params, user?.id],
     queryFn: async () => {
-      const { data } = await api.get<ApiResponse<Event[]>>('/events', { params });
-      return data;
+      return supabaseService.events.getAll(params, user?.id);
     },
   });
 };
 
 export const useEvent = (id?: string) => {
+  const { user } = useAuth();
+
   return useQuery({
-    queryKey: ['events', id],
+    queryKey: ['events', id, user?.id],
     queryFn: async () => {
       if (!id) throw new Error('Event ID is required');
-      const { data } = await api.get<ApiResponse<Event>>(`/events/${id}`);
-      return data.data;
+      return supabaseService.events.getById(id, user?.id);
     },
     enabled: Boolean(id),
   });
@@ -28,11 +31,12 @@ export const useEvent = (id?: string) => {
 
 export const useCreateEvent = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async (payload: Omit<Event, 'id' | 'created_by' | 'created_at'>) => {
-      const { data } = await api.post<ApiResponse<Event>>('/events', payload);
-      return data.data;
+      if (!user?.id) throw new Error('You must be logged in to create an event');
+      return supabaseService.events.create(payload, user.id);
     },
     onSuccess: (newEvent) => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
@@ -49,8 +53,7 @@ export const useUpdateEvent = () => {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<Event> }) => {
-      const res = await api.put<ApiResponse<Event>>(`/events/${id}`, data);
-      return res.data.data;
+      return supabaseService.events.update(id, data);
     },
     onSuccess: (updatedEvent) => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
@@ -68,8 +71,7 @@ export const useDeleteEvent = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data } = await api.delete<ApiResponse<{ message: string }>>(`/events/${id}`);
-      return data;
+      return supabaseService.events.delete(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
