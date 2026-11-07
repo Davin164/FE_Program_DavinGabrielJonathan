@@ -35,22 +35,3 @@ export const STORAGE_KEYS = {
   REFRESH_TOKEN: 'refresh_token',
   USER: 'user',
 };
-
-export const APP_ROUTES = {
-  LOGIN: '/login',
-  REGISTER: '/register',
-  DASHBOARD: '/dashboard',
-  MEMBERS: '/members',
-  MEMBERS_CREATE: '/members/new',
-  MEMBER_DETAIL: (id: string) => `/members/${id}`,
-  MEMBER_EDIT: (id: string) => `/members/${id}/edit`,
-  EVENTS: '/events',
-  EVENTS_CREATE: '/events/new',
-  EVENT_DETAIL: (id: string) => `/events/${id}`,
-  EVENT_EDIT: (id: string) => `/events/${id}/edit`,
-  ATTENDANCE: '/attendance',
-  AUDIT_LOGS: '/audit-logs',
-  PROFILE: '/profile',
-};
-
-export const DEFAULT_PAGE_SIZE = 10;

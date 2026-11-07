@@ -36,7 +36,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, label, classNa
     past: {
       bg: 'bg-gray-100 text-gray-600 border-gray-200',
       dot: 'bg-gray-400',
-      defaultLabel: 'Past Event',
+      defaultLabel: 'Completed',
     },
     closed: {
       bg: 'bg-rose-50 text-rose-700 border-rose-200',

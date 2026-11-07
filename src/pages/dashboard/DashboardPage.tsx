@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { useDashboardStats, useEvents } from '../../hooks/useEvents';
-import { useRecentAuditLogs } from '../../hooks/useAuditLogs';
+import { useEvents } from '../../hooks/useEvents';
+import { useMembers } from '../../hooks/useMembers';
 import { PageHeader } from '../../components/common/PageHeader';
 import { RoleBadge } from '../../components/common/RoleBadge';
 import { StatusBadge } from '../../components/common/StatusBadge';
@@ -15,23 +15,26 @@ import {
   PlusCircle,
   CalendarPlus,
   ArrowRight,
-  ShieldAlert,
   ClipboardCheck,
 } from 'lucide-react';
 import { formatDateTime } from '../../lib/utils';
 
 export const DashboardPage: React.FC = () => {
   const { user, role } = useAuth();
-  const { data: stats, isLoading: isStatsLoading } = useDashboardStats();
-  const { data: auditLogs = [], isLoading: isAuditLoading } = useRecentAuditLogs(5);
-  const { data: eventsData, isLoading: isEventsLoading } = useEvents({ limit: 5 });
+  const { data: membersData, isLoading: isMembersLoading } = useMembers({ limit: 1 });
+  const { data: eventsData, isLoading: isEventsLoading } = useEvents({ limit: 100 });
 
-  const events = eventsData?.data || [];
+  const allEvents = eventsData?.data || [];
+  const now = new Date();
+
+  const completedEventsCount = allEvents.filter((evt) => new Date(evt.end_time) < now).length;
+  const upcomingEvents = allEvents.filter((evt) => new Date(evt.end_time) >= now);
+  const totalMembersCount = membersData?.meta?.total ?? 0;
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title={`Welcome back, ${user?.name || 'Member'}! 👋`}
+        title={`Welcome back, ${user?.name || 'Member'}!`}
         description="Here is what is happening in GDGoC Universitas Sriwijaya today."
         actions={
           <div className="flex items-center gap-2">
@@ -63,11 +66,11 @@ export const DashboardPage: React.FC = () => {
                 Create Event
               </Link>
               <Link
-                to="/audit-logs"
+                to="/attendance"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-text-primary hover:bg-gray-200 transition-colors"
               >
-                <ShieldAlert className="w-3.5 h-3.5 text-danger" />
-                Audit Logs
+                <ClipboardCheck className="w-3.5 h-3.5 text-primary" />
+                Monitor Attendance
               </Link>
             </>
           )}
@@ -112,8 +115,8 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Stats Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Stats Cards Grid (3 Columns) */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Total Members */}
         <div className="bg-surface p-5 rounded-2xl border border-border shadow-subtle flex items-center justify-between">
           <div>
@@ -121,43 +124,27 @@ export const DashboardPage: React.FC = () => {
               Total Members
             </p>
             <p className="text-2xl font-bold text-text-primary mt-1">
-              {isStatsLoading ? '...' : stats?.total_members ?? 0}
+              {isMembersLoading ? '...' : totalMembersCount}
             </p>
-            <span className="text-[11px] text-text-secondary mt-1 block">Active UNSRI chapters</span>
+            <span className="text-[11px] text-text-secondary mt-1 block">Registered chapter members</span>
           </div>
           <div className="w-12 h-12 rounded-xl bg-primary-light text-primary flex items-center justify-center">
             <Users className="w-6 h-6" />
           </div>
         </div>
 
-        {/* Active Events */}
+        {/* Completed Events */}
         <div className="bg-surface p-5 rounded-2xl border border-border shadow-subtle flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
-              Active Events
+              Completed Events
             </p>
             <p className="text-2xl font-bold text-text-primary mt-1">
-              {isStatsLoading ? '...' : stats?.active_events ?? 0}
+              {isEventsLoading ? '...' : completedEventsCount}
             </p>
-            <span className="text-[11px] text-text-secondary mt-1 block">Ongoing workshops & meets</span>
+            <span className="text-[11px] text-text-secondary mt-1 block">Finished workshops & sessions</span>
           </div>
           <div className="w-12 h-12 rounded-xl bg-secondary-light text-secondary flex items-center justify-center">
-            <Calendar className="w-6 h-6" />
-          </div>
-        </div>
-
-        {/* Registrations Today */}
-        <div className="bg-surface p-5 rounded-2xl border border-border shadow-subtle flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
-              Registrations Today
-            </p>
-            <p className="text-2xl font-bold text-text-primary mt-1">
-              {isStatsLoading ? '...' : stats?.registrations_today ?? 0}
-            </p>
-            <span className="text-[11px] text-text-secondary mt-1 block">New student sign-ups</span>
-          </div>
-          <div className="w-12 h-12 rounded-xl bg-danger-light text-danger flex items-center justify-center">
             <CheckCircle2 className="w-6 h-6" />
           </div>
         </div>
@@ -169,9 +156,9 @@ export const DashboardPage: React.FC = () => {
               Upcoming Events
             </p>
             <p className="text-2xl font-bold text-text-primary mt-1">
-              {isStatsLoading ? '...' : stats?.upcoming_events ?? 0}
+              {isEventsLoading ? '...' : upcomingEvents.length}
             </p>
-            <span className="text-[11px] text-text-secondary mt-1 block">Scheduled for next 30 days</span>
+            <span className="text-[11px] text-text-secondary mt-1 block">Scheduled & active sessions</span>
           </div>
           <div className="w-12 h-12 rounded-xl bg-warning-light text-warning-dark flex items-center justify-center">
             <Clock className="w-6 h-6" />
@@ -179,23 +166,19 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Dashboard Section: Recent Activities or Events */}
+      {/* Main Dashboard Section: Upcoming Events List & Announcements */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left 2 Cols: Table (Audit log for LEAD, or Recent Events for Member/Div Head) */}
+        {/* Left 2 Cols: Upcoming Events List */}
         <div className="lg:col-span-2 bg-surface rounded-2xl border border-border shadow-subtle p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-base font-bold text-text-primary">
-                {role === 'LEAD' ? 'Recent Audit Trail' : 'Upcoming & Featured Events'}
-              </h2>
+              <h2 className="text-base font-bold text-text-primary">Upcoming Events</h2>
               <p className="text-xs text-text-secondary mt-0.5">
-                {role === 'LEAD'
-                  ? 'Real-time security logs and system activity'
-                  : 'Check out the latest GDGoC UNSRI sessions'}
+                Check out the latest GDGoC Universitas Sriwijaya sessions
               </p>
             </div>
             <Link
-              to={role === 'LEAD' ? '/audit-logs' : '/events'}
+              to="/events"
               className="text-xs font-semibold text-primary hover:text-primary-hover flex items-center gap-1"
             >
               View all
@@ -203,52 +186,39 @@ export const DashboardPage: React.FC = () => {
             </Link>
           </div>
 
-          {role === 'LEAD' ? (
-            isAuditLoading ? (
-              <LoadingSpinner size="md" className="py-8" />
-            ) : auditLogs.length === 0 ? (
-              <p className="text-xs text-text-secondary py-8 text-center">No recent audit logs</p>
-            ) : (
-              <div className="divide-y divide-border">
-                {auditLogs.slice(0, 5).map((log) => (
-                  <div key={log.id} className="py-3 flex items-center justify-between text-xs">
-                    <div>
-                      <span className="font-semibold text-text-primary">{log.actor_name || 'System'}</span>
-                      <span className="text-text-secondary"> {log.action.toLowerCase()} on </span>
-                      <span className="font-medium text-text-primary">{log.target_table}</span>
-                    </div>
-                    <span className="text-text-secondary">{formatDateTime(log.created_at)}</span>
-                  </div>
-                ))}
-              </div>
-            )
-          ) : isEventsLoading ? (
+          {isEventsLoading ? (
             <LoadingSpinner size="md" className="py-8" />
-          ) : events.length === 0 ? (
+          ) : upcomingEvents.length === 0 ? (
             <p className="text-xs text-text-secondary py-8 text-center">No upcoming events found</p>
           ) : (
             <div className="divide-y divide-border">
-              {events.slice(0, 5).map((evt) => (
-                <div key={evt.id} className="py-3 flex items-center justify-between gap-3">
-                  <div>
-                    <Link
-                      to={`/events/${evt.id}`}
-                      className="font-semibold text-sm text-text-primary hover:text-primary transition-colors block"
-                    >
-                      {evt.title}
-                    </Link>
-                    <span className="text-xs text-text-secondary">
-                      {formatDateTime(evt.start_time)} • {evt.location || 'Online'}
-                    </span>
+              {upcomingEvents.slice(0, 5).map((evt) => {
+                const regCount = evt.registered_count ?? evt.registration_count ?? 0;
+                const isOngoing =
+                  new Date(evt.start_time) <= now && new Date(evt.end_time) >= now;
+
+                return (
+                  <div key={evt.id} className="py-3 flex items-center justify-between gap-3">
+                    <div>
+                      <Link
+                        to={`/events/${evt.id}`}
+                        className="font-semibold text-sm text-text-primary hover:text-primary transition-colors block"
+                      >
+                        {evt.title}
+                      </Link>
+                      <span className="text-xs text-text-secondary">
+                        {formatDateTime(evt.start_time)} • {evt.location || 'Online'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-text-secondary">
+                        {regCount}/{evt.quota} spots
+                      </span>
+                      <StatusBadge status={isOngoing ? 'ongoing' : 'upcoming'} />
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-text-secondary">
-                      {evt.registration_count || 0}/{evt.quota} spots
-                    </span>
-                    <StatusBadge status="upcoming" />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -275,8 +245,7 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           <div className="mt-6 pt-4 border-t border-border flex items-center justify-between text-xs text-text-secondary">
-            <span>UNSRI Indralaya & Palembang</span>
-            <span className="font-medium text-primary">v1.0.0</span>
+            <span>Universitas Sriwijaya</span>
           </div>
         </div>
       </div>
