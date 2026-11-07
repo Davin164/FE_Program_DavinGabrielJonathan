@@ -20,12 +20,10 @@ export const MemberFormPage: React.FC = () => {
         id,
         data: {
           name: formData.name,
-          email: formData.email,
           role: formData.role,
           division_id: formData.division_id || undefined,
           nim: formData.nim || undefined,
           phone: formData.phone || undefined,
-          ...(formData.password ? { password: formData.password } : {}),
         },
       });
       navigate(`/members/${id}`);
@@ -33,7 +31,7 @@ export const MemberFormPage: React.FC = () => {
       await createMemberMutation.mutateAsync({
         name: formData.name,
         email: formData.email,
-        password: formData.password || 'password123',
+        password: formData.password || 'Password123!',
         role: formData.role,
         division_id: formData.division_id || undefined,
         nim: formData.nim || undefined,

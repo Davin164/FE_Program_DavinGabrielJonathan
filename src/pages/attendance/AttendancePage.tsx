@@ -10,7 +10,6 @@ import {
   ClipboardCheck,
   CheckCircle2,
   Calendar,
-  KeyRound,
   ShieldCheck,
   UserCheck,
 } from 'lucide-react';
@@ -23,10 +22,9 @@ export const AttendancePage: React.FC = () => {
 
   // State
   const [selectedEventId, setSelectedEventId] = useState<string>('');
-  const [checkInCode, setCheckInCode] = useState<string>('');
 
   // Queries
-  const { data: eventsData, isLoading: isEventsLoading } = useEvents({ status: 'all' });
+  const { data: eventsData, isLoading: isEventsLoading } = useEvents();
   const events = eventsData?.data || [];
 
   // Selected event for admin view or member view
@@ -49,7 +47,7 @@ export const AttendancePage: React.FC = () => {
       const end = parseISO(currentEvent.end_time);
       return isWithinInterval(now, { start, end });
     } catch {
-      return true; // Fallback to allowing check-in if dates format differently
+      return true;
     }
   }, [currentEvent]);
 
@@ -58,11 +56,7 @@ export const AttendancePage: React.FC = () => {
 
   const handleCheckIn = async () => {
     if (!activeEventId) return;
-    await checkInMutation.mutateAsync({
-      eventId: activeEventId,
-      code: checkInCode || undefined,
-    });
-    setCheckInCode('');
+    await checkInMutation.mutateAsync(activeEventId);
   };
 
   return (
@@ -104,7 +98,15 @@ export const AttendancePage: React.FC = () => {
           <div className="lg:col-span-1 bg-surface rounded-2xl border border-border p-6 shadow-subtle flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-4">
-                <StatusBadge status={isOngoing ? 'ongoing' : 'upcoming'} />
+                <StatusBadge
+                  status={
+                    isOngoing
+                      ? 'ongoing'
+                      : new Date(currentEvent.end_time) < new Date()
+                      ? 'past'
+                      : 'upcoming'
+                  }
+                />
                 <span className="text-xs text-text-secondary">
                   {formatDateTime(currentEvent.start_time)}
                 </span>
@@ -114,7 +116,7 @@ export const AttendancePage: React.FC = () => {
               <p className="text-xs text-text-secondary mb-6 leading-relaxed">
                 {isOngoing
                   ? 'This event is currently in session. Please check in now to record your verified attendance.'
-                  : 'Check-in opens once the event officially starts according to schedule.'}
+                  : 'Check-in is available during the scheduled event time window for registered participants.'}
               </p>
 
               {/* Check-in Status or Button */}
@@ -129,39 +131,21 @@ export const AttendancePage: React.FC = () => {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
-                      Session Code (Optional)
-                    </label>
-                    <div className="relative">
-                      <KeyRound className="absolute left-3.5 top-3 w-4 h-4 text-text-secondary pointer-events-none" />
-                      <input
-                        type="text"
-                        value={checkInCode}
-                        onChange={(e) => setCheckInCode(e.target.value)}
-                        placeholder="Enter 4-digit code if provided"
-                        className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-surface border border-border rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-subtle uppercase"
-                      />
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={handleCheckIn}
-                    disabled={checkInMutation.isPending || !activeEventId}
-                    className="w-full py-3.5 px-4 rounded-xl text-sm font-bold text-white bg-secondary hover:bg-secondary-hover shadow-subtle transition-all flex items-center justify-center gap-2"
-                  >
-                    {checkInMutation.isPending ? (
-                      <LoadingSpinner size="sm" className="p-0 text-white" />
-                    ) : (
-                      <>
-                        <ClipboardCheck className="w-5 h-5" />
-                        Check In Now
-                      </>
-                    )}
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleCheckIn}
+                  disabled={checkInMutation.isPending || !activeEventId}
+                  className="w-full py-3.5 px-4 rounded-xl text-sm font-bold text-white bg-secondary hover:bg-secondary-hover shadow-subtle transition-all flex items-center justify-center gap-2"
+                >
+                  {checkInMutation.isPending ? (
+                    <LoadingSpinner size="sm" className="p-0 text-white" />
+                  ) : (
+                    <>
+                      <ClipboardCheck className="w-5 h-5" />
+                      Check In Now
+                    </>
+                  )}
+                </button>
               )}
             </div>
 
@@ -200,30 +184,34 @@ export const AttendancePage: React.FC = () => {
                 />
               ) : (
                 <div className="divide-y divide-border max-h-[420px] overflow-y-auto">
-                  {attendances.map((att, idx) => (
-                    <div
-                      key={att.id || idx}
-                      className="py-3 flex items-center justify-between hover:bg-gray-50/60 px-2 rounded-lg transition-colors text-xs"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-full bg-secondary-light text-secondary font-bold flex items-center justify-center text-xs">
-                          {att.user_name ? att.user_name.charAt(0).toUpperCase() : 'U'}
+                  {attendances.map((att, idx) => {
+                    const displayName = att.name || att.user_name || 'Member';
+                    const displayEmail = att.email || att.user_email || '';
+                    return (
+                      <div
+                        key={att.id || idx}
+                        className="py-3 flex items-center justify-between hover:bg-gray-50/60 px-2 rounded-lg transition-colors text-xs"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-7 h-7 rounded-full bg-secondary-light text-secondary font-bold flex items-center justify-center text-xs">
+                            {displayName.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-text-primary">{displayName}</p>
+                            <p className="text-[11px] text-text-secondary">{displayEmail}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-semibold text-text-primary">{att.user_name}</p>
-                          <p className="text-[11px] text-text-secondary">{att.user_email}</p>
+                        <div className="text-right">
+                          <span className="font-medium text-emerald-700 block">
+                            {formatTime(att.checked_in_at)}
+                          </span>
+                          <span className="text-[10px] text-text-secondary">
+                            {formatDate(att.checked_in_at)}
+                          </span>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <span className="font-medium text-emerald-700 block">
-                          {formatTime(att.checked_in_at)}
-                        </span>
-                        <span className="text-[10px] text-text-secondary">
-                          {formatDate(att.checked_in_at)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )
             ) : isMyAttLoading ? (
@@ -240,7 +228,7 @@ export const AttendancePage: React.FC = () => {
                   <div key={att.id || idx} className="py-3 flex items-center justify-between text-xs">
                     <div>
                       <p className="font-semibold text-text-primary">
-                        {events.find((e) => e.id === att.event_id)?.title || 'GDGoC Session'}
+                        {att.title || events.find((e) => e.id === att.event_id)?.title || 'GDGoC Session'}
                       </p>
                       <span className="text-[11px] text-text-secondary">
                         Checked in at {formatDateTime(att.checked_in_at)}

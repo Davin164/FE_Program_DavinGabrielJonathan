@@ -56,10 +56,11 @@ export const EventDetailPage: React.FC = () => {
     );
   }
 
-  const regCount = event.registration_count ?? registrations.length;
+  const regCount = event.registered_count ?? event.registration_count ?? registrations.length;
   const quota = event.quota || 1;
   const percentage = Math.min(Math.round((regCount / quota) * 100), 100);
   const isFull = regCount >= quota;
+  const isPast = new Date(event.end_time) < new Date();
 
   // Check if current user is registered
   const isRegistered =
@@ -119,7 +120,7 @@ export const EventDetailPage: React.FC = () => {
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-surface rounded-2xl border border-border p-6 shadow-subtle space-y-4">
             <div className="flex items-center justify-between">
-              <StatusBadge status={isFull ? 'full' : 'upcoming'} />
+              <StatusBadge status={isPast ? 'past' : isFull ? 'full' : 'upcoming'} />
               <span className="text-xs text-text-secondary">
                 Created by <span className="font-semibold">{event.creator_name || 'Admin'}</span>
               </span>
@@ -155,25 +156,29 @@ export const EventDetailPage: React.FC = () => {
                 </p>
               ) : (
                 <div className="divide-y divide-border max-h-60 overflow-y-auto">
-                  {registrations.map((reg) => (
-                    <div key={reg.id} className="py-2.5 flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-6 h-6 rounded-full bg-primary-light text-primary font-bold flex items-center justify-center text-[10px]">
-                          {reg.user_name ? reg.user_name.charAt(0).toUpperCase() : 'U'}
+                  {registrations.map((reg) => {
+                    const displayName = reg.name || reg.user_name || 'Member';
+                    const displayEmail = reg.email || reg.user_email || '';
+                    return (
+                      <div key={reg.id} className="py-2.5 flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-6 h-6 rounded-full bg-primary-light text-primary font-bold flex items-center justify-center text-[10px]">
+                            {displayName.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-text-primary">{displayName}</p>
+                            <p className="text-[11px] text-text-secondary">{displayEmail}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-semibold text-text-primary">{reg.user_name}</p>
-                          <p className="text-[11px] text-text-secondary">{reg.user_email}</p>
+                        <div className="flex items-center gap-2">
+                          {reg.user_role && <RoleBadge role={reg.user_role} showIcon={false} />}
+                          <span className="text-[11px] text-text-secondary">
+                            {formatDate(reg.registered_at)}
+                          </span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        {reg.user_role && <RoleBadge role={reg.user_role} showIcon={false} />}
-                        <span className="text-[11px] text-text-secondary">
-                          {formatDate(reg.registered_at)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -202,17 +207,21 @@ export const EventDetailPage: React.FC = () => {
                 </p>
               ) : (
                 <div className="divide-y divide-border max-h-60 overflow-y-auto">
-                  {attendances.map((att) => (
-                    <div key={att.id} className="py-2.5 flex items-center justify-between text-xs">
-                      <div>
-                        <p className="font-semibold text-text-primary">{att.user_name}</p>
-                        <p className="text-[11px] text-text-secondary">{att.user_email}</p>
+                  {attendances.map((att) => {
+                    const displayName = att.name || att.user_name || 'Member';
+                    const displayEmail = att.email || att.user_email || '';
+                    return (
+                      <div key={att.id} className="py-2.5 flex items-center justify-between text-xs">
+                        <div>
+                          <p className="font-semibold text-text-primary">{displayName}</p>
+                          <p className="text-[11px] text-text-secondary">{displayEmail}</p>
+                        </div>
+                        <span className="text-[11px] text-secondary font-medium">
+                          Checked in at {formatTime(att.checked_in_at)}
+                        </span>
                       </div>
-                      <span className="text-[11px] text-secondary font-medium">
-                        Checked in at {formatTime(att.checked_in_at)}
-                      </span>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -274,43 +283,45 @@ export const EventDetailPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Registration Action for Member */}
-            <div className="pt-4 border-t border-border">
-              <button
-                type="button"
-                onClick={handleRegisterToggle}
-                disabled={
-                  registerMutation.isPending ||
-                  unregisterMutation.isPending ||
-                  (!isRegistered && isFull)
-                }
-                className={`w-full py-3 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 shadow-subtle ${
-                  isRegistered
-                    ? 'bg-secondary text-white hover:bg-secondary-hover'
-                    : isFull
-                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                    : 'bg-primary text-white hover:bg-primary-hover'
-                }`}
-              >
-                {registerMutation.isPending || unregisterMutation.isPending ? (
-                  <LoadingSpinner size="sm" className="p-0 text-white" />
-                ) : isRegistered ? (
-                  <>
-                    <CheckCircle2 className="w-4 h-4" />
-                    Registered (Click to Cancel)
-                  </>
-                ) : isFull ? (
-                  'Registration Full'
-                ) : (
-                  'Register For This Event'
+            {/* Registration Action */}
+            {!isPast && (
+              <div className="pt-4 border-t border-border">
+                <button
+                  type="button"
+                  onClick={handleRegisterToggle}
+                  disabled={
+                    registerMutation.isPending ||
+                    unregisterMutation.isPending ||
+                    (!isRegistered && isFull)
+                  }
+                  className={`w-full py-3 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 shadow-subtle ${
+                    isRegistered
+                      ? 'bg-secondary text-white hover:bg-secondary-hover'
+                      : isFull
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      : 'bg-primary text-white hover:bg-primary-hover'
+                  }`}
+                >
+                  {registerMutation.isPending || unregisterMutation.isPending ? (
+                    <LoadingSpinner size="sm" className="p-0 text-white" />
+                  ) : isRegistered ? (
+                    <>
+                      <CheckCircle2 className="w-4 h-4" />
+                      Registered (Click to Cancel)
+                    </>
+                  ) : isFull ? (
+                    'Registration Full'
+                  ) : (
+                    'Register For This Event'
+                  )}
+                </button>
+                {isRegistered && (
+                  <p className="text-[11px] text-text-secondary text-center mt-2">
+                    You are registered! Head over to the Attendance tab during the event to check in.
+                  </p>
                 )}
-              </button>
-              {isRegistered && (
-                <p className="text-[11px] text-text-secondary text-center mt-2">
-                  You are registered! Head over to the Attendance tab during the event to check in.
-                </p>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
