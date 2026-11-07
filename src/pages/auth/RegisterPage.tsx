@@ -14,8 +14,8 @@ const registerSchema = z
   .object({
     name: z.string().min(2, 'Name must be at least 2 characters'),
     email: z.string().email('Please enter a valid email address'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
-    confirmPassword: z.string().min(6, 'Confirm password is required'),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string().min(8, 'Confirm password is required'),
     nim: z.string().min(8, 'NIM must be at least 8 characters').optional().or(z.literal('')),
     phone: z.string().optional().or(z.literal('')),
     division_id: z.string().optional(),
@@ -74,7 +74,7 @@ export const RegisterPage: React.FC = () => {
       <div className="w-full max-w-lg bg-surface rounded-3xl border border-border p-8 shadow-card">
         {/* Header */}
         <div className="flex flex-col items-center text-center">
-          <img src="/gdgoc-logo.svg" alt="GDGoC Logo" className="w-12 h-12 mb-3" />
+          <img src="/LogoGDG.webp" alt="GDGoC Logo" className="w-14 h-14 mb-3 rounded-2xl object-cover shadow-subtle" />
           <h1 className="text-2xl font-bold text-text-primary tracking-tight">
             Join GDGoC UNSRI
           </h1>
@@ -130,7 +130,7 @@ export const RegisterPage: React.FC = () => {
                 <input
                   type="password"
                   {...register('password')}
-                  placeholder="Min 6 characters"
+                  placeholder="Min 8 characters"
                   className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-surface border border-border rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-subtle"
                 />
               </div>
