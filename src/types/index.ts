@@ -1,10 +1,11 @@
 export type Role =
   | 'LEAD'
   | 'CO_LEAD'
-  | 'SECRETARY'
-  | 'TREASURER'
-  | 'TECHNICAL_DIVISION'
-  | 'NON_TECHNICAL_DIVISION'
+  | 'SECRETARY_1'
+  | 'SECRETARY_2'
+  | 'TREASURER_1'
+  | 'TREASURER_2'
+  | 'CORE_TEAM'
   | 'MEMBER';
 
 export interface User {

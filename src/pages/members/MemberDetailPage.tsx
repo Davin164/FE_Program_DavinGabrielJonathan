@@ -46,7 +46,7 @@ export const MemberDetailPage: React.FC = () => {
         showBackButton
         backHref="/members"
         actions={
-          (currentUserRole === 'LEAD' || currentUserRole === 'CO_LEAD') && (
+          currentUserRole === 'LEAD' && (
             <Link
               to={`/members/${member.id}/edit`}
               className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white text-sm font-semibold rounded-xl shadow-subtle transition-colors"

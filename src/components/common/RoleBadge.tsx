@@ -2,7 +2,7 @@ import React from 'react';
 import { Role } from '../../types';
 import { ROLE_LABELS } from '../../constants';
 import { cn } from '../../lib/utils';
-import { ShieldCheck, User, Award, FileText, Wallet, Code2, Users2 } from 'lucide-react';
+import { ShieldCheck, User, Award, FileText, Wallet, Code2 } from 'lucide-react';
 
 interface RoleBadgeProps {
   role?: Role | string | null;
@@ -24,25 +24,30 @@ export const RoleBadge: React.FC<RoleBadgeProps> = ({ role, className, showIcon 
       bg: 'bg-sky-50 text-sky-700 border-sky-200',
       icon: Award,
     },
-    SECRETARY: {
-      label: ROLE_LABELS.SECRETARY,
+    SECRETARY_1: {
+      label: ROLE_LABELS.SECRETARY_1,
       bg: 'bg-purple-50 text-purple-700 border-purple-200',
       icon: FileText,
     },
-    TREASURER: {
-      label: ROLE_LABELS.TREASURER,
+    SECRETARY_2: {
+      label: ROLE_LABELS.SECRETARY_2,
+      bg: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+      icon: FileText,
+    },
+    TREASURER_1: {
+      label: ROLE_LABELS.TREASURER_1,
       bg: 'bg-amber-50 text-amber-700 border-amber-200',
       icon: Wallet,
     },
-    TECHNICAL_DIVISION: {
-      label: ROLE_LABELS.TECHNICAL_DIVISION,
+    TREASURER_2: {
+      label: ROLE_LABELS.TREASURER_2,
+      bg: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+      icon: Wallet,
+    },
+    CORE_TEAM: {
+      label: ROLE_LABELS.CORE_TEAM,
       bg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
       icon: Code2,
-    },
-    NON_TECHNICAL_DIVISION: {
-      label: ROLE_LABELS.NON_TECHNICAL_DIVISION,
-      bg: 'bg-rose-50 text-rose-700 border-rose-200',
-      icon: Users2,
     },
     MEMBER: {
       label: ROLE_LABELS.MEMBER,

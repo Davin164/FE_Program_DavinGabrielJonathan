@@ -49,15 +49,18 @@ export const DashboardPage: React.FC = () => {
           Quick Actions:
         </span>
         <div className="flex flex-wrap items-center gap-2.5">
-          {(role === 'LEAD' || role === 'CO_LEAD') && (
+          {role === 'LEAD' && (
+            <Link
+              to="/members/new"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary text-white hover:bg-primary-hover transition-colors shadow-subtle"
+            >
+              <PlusCircle className="w-3.5 h-3.5" />
+              Add Member
+            </Link>
+          )}
+
+          {role && role !== 'MEMBER' && (
             <>
-              <Link
-                to="/members/new"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary text-white hover:bg-primary-hover transition-colors shadow-subtle"
-              >
-                <PlusCircle className="w-3.5 h-3.5" />
-                Add Member
-              </Link>
               <Link
                 to="/events/new"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-secondary text-white hover:bg-secondary-hover transition-colors shadow-subtle"
@@ -70,25 +73,6 @@ export const DashboardPage: React.FC = () => {
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-text-primary hover:bg-gray-200 transition-colors"
               >
                 <ClipboardCheck className="w-3.5 h-3.5 text-primary" />
-                Monitor Attendance
-              </Link>
-            </>
-          )}
-
-          {role !== 'LEAD' && role !== 'CO_LEAD' && role !== 'MEMBER' && (
-            <>
-              <Link
-                to="/events/new"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-secondary text-white hover:bg-secondary-hover transition-colors shadow-subtle"
-              >
-                <CalendarPlus className="w-3.5 h-3.5" />
-                Create Event
-              </Link>
-              <Link
-                to="/attendance"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary text-white hover:bg-primary-hover transition-colors shadow-subtle"
-              >
-                <ClipboardCheck className="w-3.5 h-3.5" />
                 Monitor Attendance
               </Link>
             </>

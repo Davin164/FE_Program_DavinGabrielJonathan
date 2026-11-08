@@ -3,20 +3,22 @@ import { Role } from '../types';
 export const ROLES: Record<string, Role> = {
   LEAD: 'LEAD',
   CO_LEAD: 'CO_LEAD',
-  SECRETARY: 'SECRETARY',
-  TREASURER: 'TREASURER',
-  TECHNICAL_DIVISION: 'TECHNICAL_DIVISION',
-  NON_TECHNICAL_DIVISION: 'NON_TECHNICAL_DIVISION',
+  SECRETARY_1: 'SECRETARY_1',
+  SECRETARY_2: 'SECRETARY_2',
+  TREASURER_1: 'TREASURER_1',
+  TREASURER_2: 'TREASURER_2',
+  CORE_TEAM: 'CORE_TEAM',
   MEMBER: 'MEMBER',
 };
 
 export const ROLE_LABELS: Record<Role, string> = {
   LEAD: 'Lead',
   CO_LEAD: 'Co-Lead',
-  SECRETARY: 'Secretary',
-  TREASURER: 'Treasurer',
-  TECHNICAL_DIVISION: 'Technical Division',
-  NON_TECHNICAL_DIVISION: 'Non-Technical Division',
+  SECRETARY_1: 'Secretary 1',
+  SECRETARY_2: 'Secretary 2',
+  TREASURER_1: 'Treasurer 1',
+  TREASURER_2: 'Treasurer 2',
+  CORE_TEAM: 'Core Team',
   MEMBER: 'Member',
 };
 
@@ -31,25 +33,30 @@ export const ROLE_BADGE_STYLES: Record<Role, { bg: string; text: string; border:
     text: 'text-sky-700',
     border: 'border-sky-200',
   },
-  SECRETARY: {
+  SECRETARY_1: {
     bg: 'bg-purple-50',
     text: 'text-purple-700',
     border: 'border-purple-200',
   },
-  TREASURER: {
+  SECRETARY_2: {
+    bg: 'bg-indigo-50',
+    text: 'text-indigo-700',
+    border: 'border-indigo-200',
+  },
+  TREASURER_1: {
     bg: 'bg-amber-50',
     text: 'text-amber-700',
     border: 'border-amber-200',
   },
-  TECHNICAL_DIVISION: {
+  TREASURER_2: {
+    bg: 'bg-yellow-50',
+    text: 'text-yellow-700',
+    border: 'border-yellow-200',
+  },
+  CORE_TEAM: {
     bg: 'bg-secondary-light',
     text: 'text-secondary-dark',
     border: 'border-secondary/20',
-  },
-  NON_TECHNICAL_DIVISION: {
-    bg: 'bg-rose-50',
-    text: 'text-rose-700',
-    border: 'border-rose-200',
   },
   MEMBER: {
     bg: 'bg-gray-100',

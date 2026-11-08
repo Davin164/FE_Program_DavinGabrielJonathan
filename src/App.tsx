@@ -62,7 +62,7 @@ export const App: React.FC = () => {
                 <Route
                   path="/members/new"
                   element={
-                    <RoleGuard allowedRoles={['LEAD', 'CO_LEAD']}>
+                    <RoleGuard allowedRoles={['LEAD']}>
                       <MemberFormPage />
                     </RoleGuard>
                   }
@@ -71,7 +71,7 @@ export const App: React.FC = () => {
                 <Route
                   path="/members/:id/edit"
                   element={
-                    <RoleGuard allowedRoles={['LEAD', 'CO_LEAD']}>
+                    <RoleGuard allowedRoles={['LEAD']}>
                       <MemberFormPage />
                     </RoleGuard>
                   }
@@ -86,10 +86,11 @@ export const App: React.FC = () => {
                       allowedRoles={[
                         'LEAD',
                         'CO_LEAD',
-                        'SECRETARY',
-                        'TREASURER',
-                        'TECHNICAL_DIVISION',
-                        'NON_TECHNICAL_DIVISION',
+                        'SECRETARY_1',
+                        'SECRETARY_2',
+                        'TREASURER_1',
+                        'TREASURER_2',
+                        'CORE_TEAM',
                       ]}
                     >
                       <EventFormPage />
@@ -104,10 +105,11 @@ export const App: React.FC = () => {
                       allowedRoles={[
                         'LEAD',
                         'CO_LEAD',
-                        'SECRETARY',
-                        'TREASURER',
-                        'TECHNICAL_DIVISION',
-                        'NON_TECHNICAL_DIVISION',
+                        'SECRETARY_1',
+                        'SECRETARY_2',
+                        'TREASURER_1',
+                        'TREASURER_2',
+                        'CORE_TEAM',
                       ]}
                     >
                       <EventFormPage />

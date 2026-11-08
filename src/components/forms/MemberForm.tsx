@@ -17,10 +17,11 @@ const memberFormSchema = z.object({
   role: z.enum([
     'LEAD',
     'CO_LEAD',
-    'SECRETARY',
-    'TREASURER',
-    'TECHNICAL_DIVISION',
-    'NON_TECHNICAL_DIVISION',
+    'SECRETARY_1',
+    'SECRETARY_2',
+    'TREASURER_1',
+    'TREASURER_2',
+    'CORE_TEAM',
     'MEMBER',
   ]),
   division_id: z.string().optional(),
@@ -126,12 +127,13 @@ export const MemberForm: React.FC<MemberFormProps> = ({
             className="w-full px-3.5 py-2.5 text-sm bg-surface border border-border rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-subtle"
           >
             <option value="MEMBER">Member</option>
-            <option value="LEAD">Lead</option>
+            <option value="CORE_TEAM">Core Team</option>
+            <option value="TREASURER_2">Treasurer 2</option>
+            <option value="TREASURER_1">Treasurer 1</option>
+            <option value="SECRETARY_2">Secretary 2</option>
+            <option value="SECRETARY_1">Secretary 1</option>
             <option value="CO_LEAD">Co-Lead</option>
-            <option value="SECRETARY">Secretary</option>
-            <option value="TREASURER">Treasurer</option>
-            <option value="TECHNICAL_DIVISION">Technical Division</option>
-            <option value="NON_TECHNICAL_DIVISION">Non-Technical Division</option>
+            <option value="LEAD">Lead</option>
           </select>
           {errors.role && <p className="mt-1 text-xs text-danger">{errors.role.message}</p>}
         </div>
