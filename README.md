@@ -1,7 +1,13 @@
 # GDGoC UNSRI Management System — Front-End Application
 
-> **Google Developer Groups on Campus (GDGoC) Universitas Sriwijaya**  
-> Full-Stack Management Web Application built with React 18, TypeScript, Vite, Tailwind CSS, TanStack Query, and Supabase Auth.
+> **Google Developer Groups on Campus (GDGoC) Universitas Sriwijaya**
+> Sistem manajemen Core Team & anggota: React 18 + TypeScript + Vite + Tailwind CSS + TanStack Query, dengan **Supabase** sebagai Backend-as-a-Service (PostgreSQL).
+
+| | |
+| :-- | :-- |
+| **Live (Vercel)** | https://fe-program-davin-gabriel-jonathan.vercel.app |
+| **Repository** | https://github.com/Davin164/FE_Program_DavinGabrielJonathan |
+| **BaaS** | Supabase (project `your-project-id`, PostgreSQL) |
 
 ---
 
@@ -10,7 +16,7 @@
 | Color Role | Hex Code | Google Brand Color |
 | :--- | :--- | :--- |
 | **Primary** | `#4285F4` | Google Blue |
-| **Secondary** | `#34A853` | Google Green |
+| **Secondary / Success** | `#34A853` | Google Green |
 | **Accent / Danger** | `#EA4335` | Google Red |
 | **Warning** | `#FBBC04` | Google Yellow |
 | **Background** | `#F8F9FA` | Google Light Gray |
@@ -22,156 +28,141 @@
 
 ## 🚀 Tech Stack
 
-- **Framework**: [React 18](https://react.dev/) + [TypeScript 5](https://www.typescriptlang.org/) via [Vite](https://vitejs.dev/)
-- **Styling**: [Tailwind CSS v3](https://tailwindcss.com/)
-- **Routing**: [React Router DOM v6](https://reactrouter.com/) (Nested Layouts, Protected Routes, Role Guards)
-- **Server State**: [TanStack Query v5](https://tanstack.com/query/latest) (React Query)
-- **Forms & Validation**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
-- **BaaS & Auth**: [Supabase](https://supabase.com/) (Google OAuth + Cloud PostgreSQL) + JWT Token Management
-- **HTTP Client**: [Axios](https://axios-http.com/) with Request/Response Interceptors (Auto Bearer attachment & Refresh Token rotation queue)
-- **Icons & UI**: [Lucide React](https://lucide.dev/) & [Sonner](https://sonner.emilkowal.ski/)
-- **Deployment**: [Vercel](https://vercel.com/) (`vercel.json` SPA rewrites configured)
+- **Framework**: React 18 + TypeScript 5 via Vite 5
+- **Styling**: Tailwind CSS v3 (palet resmi GDGoC di `tailwind.config.ts`)
+- **Routing**: React Router DOM v6 (nested layout, `ProtectedRoute`, `RoleGuard`)
+- **Server State**: TanStack Query v5 (cache, invalidasi otomatis setelah mutasi)
+- **Form & Validasi**: React Hook Form + Zod
+- **BaaS**: `@supabase/supabase-js` — query langsung ke PostgreSQL Supabase lewat `src/services/supabaseService.ts` (satu-satunya lapisan akses data)
+- **Auth**: email + password (hash **bcrypt** via `bcryptjs`) dan **Google OAuth** (Supabase Auth)
+- **UI**: Lucide React, Sonner (toast)
+- **Deployment**: Vercel (`vercel.json` berisi SPA rewrite)
 
 ---
 
-## 🔐 Role-Based Access Control (RBAC) & Test Accounts
+## 🔐 Role (RBAC) & Akun Pengujian
 
-Aplikasi menerapkan 7 Role resmi sesuai struktur kepengurusan GDGoC Universitas Sriwijaya:
+Ada **8 role** sesuai struktur kepengurusan. Semua akun uji berpassword **`Password123!`**.
 
-| Role | Email | Password | Cakupan Wewenang |
-| :--- | :--- | :--- | :--- |
-| **LEAD** | `lead.gdgoc@gmail.com` | `Password123!` | Pimpinan tertinggi chapter; satu-satunya yang bisa menambah akun (Co-Lead s.d. Member), mengubah role, dan kontrol penuh event/absensi. |
-| **CO_LEAD** | `colead.gdgoc@gmail.com` | `Password123!` | Wakil pimpinan chapter; membuat dan mengelola event, memantau kehadiran kegiatan. |
-| **SECRETARY_1** | `sec1.gdgoc@gmail.com` | `Password123!` | Sekretaris utama chapter; membuat dan mengelola event, rekapitulasi kehadiran kegiatan. |
-| **SECRETARY_2** | `sec2.gdgoc@gmail.com` | `Password123!` | Sekretaris pendukung; membuat dan mengelola event, rekapitulasi kehadiran. |
-| **TREASURER_1** | `treas1.gdgoc@gmail.com` | `Password123!` | Bendahara utama chapter; membuat event, mendata logistik & kehadiran. |
-| **TREASURER_2** | `treas2.gdgoc@gmail.com` | `Password123!` | Bendahara pendukung; membuat event, mendata logistik & kehadiran. |
-| **CORE_TEAM** | `core.tech@gmail.com` | `Password123!` | Pengurus inti divisi teknis & kreatif (12 divisi); mengorganisir workshop, hands-on labs, dan presensi. |
-| **CORE_TEAM (ML)** | `core.ml@gmail.com` | `Password123!` | Pengurus inti divisi Machine Learning; mengorganisir workshop AI & presensi. |
-| **MEMBER (Davin)** | `davingabrieljonathan@gmail.com` | `Password123!` | Anggota terdaftar; registrasi publik hanya menghasilkan role Member, mendaftar event, self check-in. |
-| **MEMBER (Siti)** | `member.gdgoc@gmail.com` | `Password123!` | Anggota terdaftar kedua untuk pengujian perebutan kuota (*race condition*). |
+| Role | Email | Wewenang |
+| :--- | :--- | :--- |
+| **LEAD** | `lead.gdgoc@gmail.com` | Semua akses. **Satu-satunya** yang bisa menambah akun (Co-Lead s.d. Member), mengubah role, menghapus anggota. |
+| **CO_LEAD** | `colead.gdgoc@gmail.com` | Eksekutif: tambah/ubah/hapus event, pantau & batalkan absensi, lihat Audit Log. |
+| **SECRETARY_1** | `sec1.gdgoc@gmail.com` | Eksekutif (hak sama dengan Co-Lead pada event/absensi). |
+| **SECRETARY_2** | `sec2.gdgoc@gmail.com` | Eksekutif. |
+| **TREASURER_1** | `treas1.gdgoc@gmail.com` | Eksekutif. |
+| **TREASURER_2** | `treas2.gdgoc@gmail.com` | Eksekutif. |
+| **CORE_TEAM** | `core.tech@gmail.com` / `core.ml@gmail.com` | Eksekutif tingkat divisi (Web Dev / Machine Learning): kelola event & absensi. |
+| **MEMBER** | `davingabrieljonathan@gmail.com` / `member.gdgoc@gmail.com` | Daftar/batal event, check-in & batal absen sendiri. |
+
+**Aturan akses**
+- Registrasi publik (`/register`) **hanya** menghasilkan role **MEMBER**.
+- Tambah/ubah role/hapus anggota: **LEAD saja** (dijaga `RoleGuard` + disembunyikan di UI).
+- Buat/ubah/hapus event & kelola absensi: semua role **selain MEMBER** (Lead s.d. Core Team).
+- Panel **Audit Log** di Dashboard: hanya terlihat oleh role selain MEMBER.
+- Halaman login menyediakan chip **"Pilihan Akun Uji Coba"** — klik untuk mengisi email & password otomatis.
+
+**12 divisi**: Machine Learning, Cyber Security, Game Development, Mobile Development, Web Development, UI/UX, Project Management, Human Resource, Public Relation, Creative Design, Videography, Copywriting.
 
 ---
 
-## 📁 Project Structure
+## ✅ Fitur & Aturan Bisnis
+
+| Area | Perilaku |
+| :--- | :--- |
+| **Anggota** | Direktori dengan search (debounced), filter role & divisi, sorting server-side, pagination, **soft delete** (`is_deleted`). |
+| **Event** | CRUD + **kuota**. Pendaftaran ganda dicegah constraint `UNIQUE(user_id, event_id)`. Kuota penuh ditolak. |
+| **Absensi** | Tombol check-in **dinonaktifkan sebelum event dimulai** dan setelah selesai; aktif hanya saat jadwal berlangsung. Satu check-in per anggota per event (`UNIQUE`). Ada **Batalkan Absen** (oleh pemilik; pengurus bisa membatalkan peserta lain). |
+| **Audit Log** | Mencatat siapa (aktor), apa, nilai lama → baru: `UPDATE_ROLE`, `PROFILE_UPDATED`, `MEMBER_CREATED`, `MEMBER_DELETED`, `EVENT_CREATED`, `EVENT_UPDATED`, `EVENT_DELETED`. |
+| **Dashboard** | Total Members, Completed Events, Upcoming Events, daftar event mendatang, dan Audit Log. |
+
+---
+
+## 📁 Struktur Proyek
 
 ```
 FE_Program_DavinGabrielJonathan/
-├── public/
-│   └── LogoGDG.webp                    # Official GDGoC UNSRI chapter logo
+├── public/LogoGDG.webp                  # Logo resmi GDGoC UNSRI
+├── supabase/
+│   ├── setup.sql                        # Skema + seed (⚠ menghapus & membuat ulang tabel)
+│   └── hardening.sql                    # Aturan DB aman di-run ulang: kuota atomik & jendela absensi
 ├── src/
 │   ├── components/
-│   │   ├── common/
-│   │   │   ├── ConfirmDialog.tsx       # Reusable alert modal for destructive actions
-│   │   │   ├── DataTable.tsx           # Generic sortable, paginated, responsive data table
-│   │   │   ├── EmptyState.tsx          # Clean empty states with actionable buttons
-│   │   │   ├── ErrorBoundary.tsx       # Catch unhandled UI exceptions gracefully
-│   │   │   ├── LoadingSpinner.tsx      # Standardized animated loaders
-│   │   │   ├── PageHeader.tsx          # Header with breadcrumbs and action triggers
-│   │   │   ├── ProtectedRoute.tsx      # Route wrapper verifying authentication
-│   │   │   ├── RoleBadge.tsx           # Role-based colored chips (LEAD, DIV_HEAD, MEMBER)
-│   │   │   ├── RoleGuard.tsx           # 403 Forbidden protection component
-│   │   │   ├── SearchInput.tsx         # Debounced search bar with instant clear
-│   │   │   └── StatusBadge.tsx         # Event state badges (Upcoming, Live Now, Full, Completed)
-│   │   ├── forms/
-│   │   │   ├── EventForm.tsx           # React Hook Form + Zod for event creation/edit
-│   │   │   ├── MemberForm.tsx          # React Hook Form + Zod for member creation/edit
-│   │   │   └── ProfileForm.tsx         # Form for personal profile credentials
-│   │   └── layout/
-│   │       ├── AppLayout.tsx           # Master layout with responsive sidebar & navbar
-│   │       ├── Navbar.tsx              # Top bar with user profile dropdown & logout
-│   │       └── Sidebar.tsx             # Collapsible navigation drawer
-│   ├── contexts/
-│   │   └── AuthContext.tsx             # Global auth state, Supabase OAuth listener, token storage
-│   ├── hooks/
-│   │   ├── useAttendances.ts           # React Query hooks for attendance check-ins
-│   │   ├── useAuth.ts                  # Auth context consumption hook
-│   │   ├── useEvents.ts                # React Query hooks for event CRUD
-│   │   ├── useMembers.ts               # React Query hooks for member CRUD, role mutation & divisions
-│   │   └── useRegistrations.ts         # React Query hooks for event registrations
-│   ├── lib/
-│   │   ├── axios.ts                    # Axios instance with 401 refresh token rotation interceptor
-│   │   ├── supabase.ts                 # Supabase BaaS client initialization
-│   │   └── utils.ts                    # Date formatters, initials generator, error parser, cn()
-│   ├── pages/
-│   │   ├── attendance/
-│   │   │   └── AttendancePage.tsx      # Self check-in interface & live attendee roster
-│   │   ├── auth/
-│   │   │   ├── LoginPage.tsx           # Email/password + Google OAuth login via Supabase
-│   │   │   └── RegisterPage.tsx        # Member registration form
-│   │   ├── dashboard/
-│   │   │   └── DashboardPage.tsx       # Chapter metrics (Members, Completed & Upcoming Events)
-│   │   ├── events/
-│   │   │   ├── EventDetailPage.tsx     # Quota progress, registration & attendee roster
-│   │   │   ├── EventFormPage.tsx       # Create / edit event page
-│   │   │   └── EventsPage.tsx          # Card grid view with search & Upcoming/Completed filters
-│   │   ├── members/
-│   │   │   ├── MemberDetailPage.tsx    # Detailed member academic & chapter view
-│   │   │   ├── MemberFormPage.tsx      # Add / edit member page (LEAD only)
-│   │   │   └── MembersPage.tsx         # Directory with server sort, search, filter & pagination
-│   │   └── profile/
-│   │       └── ProfilePage.tsx         # Personal profile settings
-│   ├── constants/
-│   │   └── index.ts                    # API endpoints, role labels, storage keys
-│   ├── types/
-│   │   └── index.ts                    # Strict TypeScript interfaces & API contracts
-│   ├── App.tsx                         # Router configuration, QueryClient & route guards
-│   ├── index.css                       # Tailwind directives & custom subtle scrollbars
-│   └── main.tsx                        # React 18 DOM entry point
-├── .env.example                        # Template for environment variables
-├── vercel.json                         # SPA client-side routing rewrite rules for Vercel
-├── package.json
-└── README.md
+│   │   ├── common/                      # DataTable, ConfirmDialog, EmptyState, ErrorBoundary, LoadingSpinner,
+│   │   │                                # PageHeader, ProtectedRoute, RoleBadge, RoleGuard, SearchInput, StatusBadge
+│   │   ├── forms/                       # EventForm, MemberForm, ProfileForm (React Hook Form + Zod)
+│   │   └── layout/                      # AppLayout, Navbar, Sidebar
+│   ├── contexts/AuthContext.tsx         # Sesi login, Google OAuth listener
+│   ├── hooks/                           # useAuth, useEvents, useMembers, useRegistrations, useAttendances, useAuditLogs
+│   ├── lib/                             # supabase.ts (client), utils.ts
+│   ├── services/supabaseService.ts      # Seluruh akses data (auth, events, members, registrations, attendances, audit)
+│   ├── pages/                           # auth, dashboard, members, events, attendance, profile
+│   ├── constants/index.ts               # Role, label, style badge
+│   ├── types/index.ts                   # Tipe TypeScript
+│   ├── App.tsx                          # Router + guard
+│   └── main.tsx
+├── .env.example · vercel.json · github.txt · package.json · README.md
 ```
+
+**13 rute**: `/login`, `/register`, `/dashboard`, `/members`, `/members/new`, `/members/:id`, `/members/:id/edit`, `/events`, `/events/new`, `/events/:id`, `/events/:id/edit`, `/attendance`, `/profile`.
 
 ---
 
-## ⚙️ Installation & Local Setup
+## ⚙️ Menjalankan Secara Lokal
 
-### 1. Prerequisites
-- **Node.js** >= 18.0.0
-- Running Back-End API (`http://localhost:3000/api` or deployed API URL)
+Prasyarat: **Node.js ≥ 18**.
 
-### 2. Install Dependencies
 ```bash
 npm install
+npm run dev        # http://localhost:5173
+npm run build      # build produksi + type-check
 ```
 
-### 3. Configure Environment Variables
-Copy `.env.example` to `.env`:
-```bash
-cp .env.example .env
-```
-Fill in the configuration values:
+### Environment (`.env`)
+File `.env` **sudah disertakan di dalam ZIP submission** dan terhubung ke project Supabase yang aktif, jadi aplikasi langsung bisa dipakai tanpa setup layanan eksternal. Untuk membuat sendiri, salin `.env.example`:
+
 ```env
-VITE_API_URL=http://localhost:3000/api
-VITE_SUPABASE_URL=https://your-project-ref.supabase.co
-VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=<publishable key>
 ```
 
-### 4. Start Development Server
-```bash
-npm run dev
-```
-Open `http://localhost:5173` in your browser.
-
-### 5. Build for Production
-```bash
-npm run build
-```
+> `.env` di-ignore oleh Git (tidak ada secret di riwayat commit). `src/lib/supabase.ts` memakai nilai ini; jika kosong, jatuh ke project Supabase publik yang sama.
 
 ---
 
-## 🌐 Deploying to Vercel & Supabase BaaS
+## 🗄️ Setup Database Supabase (hanya bila membuat project baru)
 
-1. **GitHub Repository**: [https://github.com/Davin164/FE_Program_DavinGabrielJonathan](https://github.com/Davin164/FE_Program_DavinGabrielJonathan)
-2. In **Supabase Dashboard**:
-   - Copy **Project URL** (`VITE_SUPABASE_URL`) and **anon public key** (`VITE_SUPABASE_ANON_KEY`) from *Project Settings -> API*.
-   - Enable **Google Provider** under *Authentication -> Providers -> Google* and add your Vercel domain (`https://your-app.vercel.app/dashboard`) to *Redirect URLs*.
-3. In **Vercel Dashboard**:
-   - Import the GitHub repository (`Framework Preset: Vite`).
-   - Add Environment Variables: `VITE_API_URL`, `VITE_SUPABASE_URL`, and `VITE_SUPABASE_ANON_KEY`.
-   - Click **Deploy**. `vercel.json` automatically handles SPA route refreshes.
+1. Buka **Supabase → SQL Editor**.
+2. Jalankan `supabase/setup.sql` — membuat tabel, seed akun/divisi/event, RLS, **dan** trigger aturan bisnis.
+   > ⚠️ Skrip ini memiliki `DROP TABLE`. **Jangan** dijalankan di database yang sudah berisi data.
+3. Untuk database yang **sudah berjalan**, cukup jalankan `supabase/hardening.sql` (aman diulang, tidak menghapus data). Isinya:
+   - `trg_enforce_event_quota` — `SELECT … FOR UPDATE` pada baris event sehingga dua pendaftar yang berebut kursi terakhir tidak bisa sama-sama lolos.
+   - `trg_enforce_attendance_window` — absensi hanya diterima saat `start_time ≤ now ≤ end_time`.
+4. (Opsional, untuk Google Sign-In) *Authentication → Providers → Google*, lalu tambahkan URL Vercel ke *Redirect URLs*.
+
+---
+
+## 🌐 Deploy ke Vercel
+
+1. Import repository GitHub (Framework Preset: **Vite**).
+2. Tambahkan Environment Variables: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.
+3. Deploy. `vercel.json` menangani refresh halaman pada rute SPA.
+
+---
+
+## 🧪 Skenario Uji Cepat
+
+1. Login **Lead** → buka *Members* → ubah role seorang member → buka *Dashboard*: Audit Log menampilkan **Lead** sebagai aktor dan `MEMBER ➔ CORE_TEAM`.
+2. Login **Member (Davin)** → *Attendance* → pilih event mendatang: tombol **disabled**. Pilih event yang sedang berlangsung: tombol aktif → check-in → **Batalkan Absen**.
+3. Daftarkan dua akun ke event berkuota 1 → akun kedua ditolak (*quota is full*).
+4. Registrasi akun baru di `/register` → role otomatis **Member**.
+
+---
+
+## ⚠️ Batasan yang Diketahui & Rencana Perbaikan
+
+- **Otorisasi masih berlapis di sisi klien + constraint database.** Tabel memakai kebijakan RLS terbuka (`USING (true)`) karena login memakai tabel `users` kustom, bukan Supabase Auth, sehingga database tidak dapat membedakan pemanggil. Aturan *kuota* dan *jendela absensi* sudah dipaksa di database (trigger), namun pembatasan **role** (misal hanya Lead boleh mengubah role) belum ditegakkan di database.
+- **Rencana**: migrasi ke **Supabase Auth** (JWT nyata) + RLS berbasis `auth.uid()` dan role, serta memindahkan operasi sensitif (ubah role, tambah akun) ke fungsi `SECURITY DEFINER`/Edge Function. Untuk produksi, hash password tidak boleh dapat dibaca klien.
 
 ---
 **Developed for GDGoC UNSRI Core Team Selection — Davin Gabriel Jonathan**
