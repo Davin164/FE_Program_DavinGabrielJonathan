@@ -1,1 +1,42 @@
+GDGoC UNSRI - TECHNICAL ASSIGNMENT SUBMISSION
+Nama: Davin Gabriel Jonathan
+Divisi: Front-End Developer
+
+1. Repository GitHub (Public)
 https://github.com/Davin164/FE_Program_DavinGabrielJonathan
+
+2. Live Deployment URL (Vercel)
+https://fe-program-davin-gabriel-jonathan.vercel.app
+
+3. Backend-as-a-Service (Supabase)
+Project URL: https://your-project-id.supabase.co
+Anon Key: your-supabase-publishable-key
+
+4. Akun Pengujian (Test Accounts)
+Password untuk seluruh akun uji: Password123!
+Tersedia juga fitur tombol "Pilihan Akun Uji Coba" langsung di halaman Login untuk akses cepat satu klik.
+
+Role LEAD (Akses Penuh Chapter, Manajemen Anggota, Role & Divisi)
+Email: lead.gdgoc@gmail.com
+Password: Password123!
+
+Role CORE_TEAM / Div Head (Manajemen Kegiatan & Validasi Absensi)
+Email: core.tech@gmail.com
+Password: Password123!
+
+Role MEMBER (Katalog Kegiatan, Pendaftaran & Absensi Mandiri)
+Email: davin4@gmail.com
+Password: Password123!
+
+5. Cara Menjalankan Secara Lokal
+File konfigurasi .env telah disediakan lengkap di dalam folder proyek ini dengan kredensial Supabase aktif.
+
+Langkah Menjalankan:
+npm install
+npm run dev
+
+Aplikasi otomatis berjalan di http://localhost:5173
+
+Langkah Build Produksi:
+npm run build
+npm run preview
