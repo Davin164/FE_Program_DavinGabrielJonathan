@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useEvents } from '../../hooks/useEvents';
 import { useMembers } from '../../hooks/useMembers';
+import { useAuditLogs } from '../../hooks/useAuditLogs';
 import { PageHeader } from '../../components/common/PageHeader';
 import { RoleBadge } from '../../components/common/RoleBadge';
 import { StatusBadge } from '../../components/common/StatusBadge';
@@ -16,6 +17,8 @@ import {
   CalendarPlus,
   ArrowRight,
   ClipboardCheck,
+  ShieldCheck,
+  History,
 } from 'lucide-react';
 import { formatDateTime } from '../../lib/utils';
 
@@ -23,6 +26,7 @@ export const DashboardPage: React.FC = () => {
   const { user, role } = useAuth();
   const { data: membersData, isLoading: isMembersLoading } = useMembers({ limit: 1 });
   const { data: eventsData, isLoading: isEventsLoading } = useEvents({ limit: 100 });
+  const { data: auditLogs = [], isLoading: isLogsLoading } = useAuditLogs(8);
 
   const allEvents = eventsData?.data || [];
   const now = new Date();
@@ -232,6 +236,101 @@ export const DashboardPage: React.FC = () => {
             <span>Universitas Sriwijaya</span>
           </div>
         </div>
+      </div>
+
+      {/* Audit Logs Section for Leaders & Chapter Transparency */}
+      <div className="bg-surface rounded-2xl border border-border shadow-subtle p-6">
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-border">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-text-primary">
+                Audit Logs & Security Trail
+              </h2>
+              <p className="text-xs text-text-secondary mt-0.5">
+                Riwayat perubahan role dan aksi administratif sensitif sesuai spesifikasi teknis GDGoC UNSRI.
+              </p>
+            </div>
+          </div>
+          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-text-secondary flex items-center gap-1.5">
+            <History className="w-3.5 h-3.5" />
+            Live Trail
+          </span>
+        </div>
+
+        {isLogsLoading ? (
+          <div className="py-8 flex justify-center">
+            <LoadingSpinner size="md" />
+          </div>
+        ) : auditLogs.length === 0 ? (
+          <div className="py-8 text-center text-xs text-text-secondary">
+            Belum ada aktivitas audit log yang tercatat. Setiap perubahan role anggota akan tercatat di sini secara otomatis.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-border text-text-secondary uppercase tracking-wider text-[11px]">
+                  <th className="py-2.5 px-3 font-semibold">Actor / Pelaksana</th>
+                  <th className="py-2.5 px-3 font-semibold">Aksi</th>
+                  <th className="py-2.5 px-3 font-semibold">Tabel Sasaran</th>
+                  <th className="py-2.5 px-3 font-semibold">Detail Perubahan</th>
+                  <th className="py-2.5 px-3 font-semibold text-right">Waktu</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/60">
+                {auditLogs.map((log) => {
+                  let detailText = '-';
+                  if (log.new_value) {
+                    if (log.action === 'UPDATE_ROLE' || log.action === 'ROLE_CHANGE') {
+                      detailText = `Perubahan Role: ${log.old_value?.role || 'MEMBER'} ➔ ${log.new_value?.role}`;
+                    } else if (log.action === 'MEMBER_CREATED') {
+                      detailText = `Akun dibuat: ${log.new_value?.name} (${log.new_value?.role})`;
+                    } else if (log.action === 'EVENT_CREATED') {
+                      detailText = `Event dibuat: "${log.new_value?.title}"`;
+                    } else {
+                      detailText = JSON.stringify(log.new_value);
+                    }
+                  }
+
+                  return (
+                    <tr key={log.id} className="hover:bg-gray-50/70 transition-colors">
+                      <td className="py-3 px-3">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-text-primary">
+                            {log.actor?.name || 'System / Admin'}
+                          </span>
+                          {log.actor?.role && (
+                            <RoleBadge role={log.actor.role} showIcon={false} className="text-[10px] py-0.5 px-2" />
+                          )}
+                        </div>
+                        <span className="text-[11px] text-text-secondary block">
+                          {log.actor?.email || 'system'}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3">
+                        <span className="inline-block px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                          {log.action}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 font-mono text-gray-600">
+                        {log.target_table || 'public'}
+                      </td>
+                      <td className="py-3 px-3 text-text-primary max-w-xs truncate" title={detailText}>
+                        {detailText}
+                      </td>
+                      <td className="py-3 px-3 text-right text-text-secondary whitespace-nowrap">
+                        {formatDateTime(log.created_at)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

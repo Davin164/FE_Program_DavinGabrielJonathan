@@ -76,8 +76,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setUser(freshUser);
         localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(freshUser));
       }
-    } catch {
-      // Keep cached user if offline or network issue
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : '';
+      if (msg.includes('not found') || msg.includes('inactive')) {
+        clearAuthData();
+      }
     } finally {
       setIsLoading(false);
     }

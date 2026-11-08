@@ -5,6 +5,7 @@ import {
   Event,
   Registration,
   Attendance,
+  AuditLog,
   Division,
   ApiResponse,
   EventQueryParams,
@@ -682,7 +683,20 @@ export const supabaseService = {
     },
 
     async checkIn(eventId: string, userId: string): Promise<Attendance> {
-      // 1. Verify event exists
+      // 1. Verify user exists first to prevent foreign key errors if session is stale
+      const { data: userRecord, error: userErr } = await supabase
+        .from('users')
+        .select('id, name, email')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (userErr || !userRecord) {
+        throw new Error(
+          'Sesi akun kamu tidak sinkron dengan database (ID tidak ditemukan). Silakan Sign Out lalu Sign In kembali.'
+        );
+      }
+
+      // 2. Verify event exists
       const { data: event, error: eventErr } = await supabase
         .from('events')
         .select('id, title, start_time, end_time, is_deleted')
@@ -693,7 +707,7 @@ export const supabaseService = {
         throw new Error('Event not found or has been removed');
       }
 
-      // 2. Check if already checked in
+      // 3. Check if already checked in
       const { data: existing } = await supabase
         .from('attendances')
         .select('id')
@@ -705,7 +719,7 @@ export const supabaseService = {
         throw new Error('You have already checked in to this event');
       }
 
-      // 3. Record attendance
+      // 4. Record attendance
       const { data: newAtt, error: insertErr } = await supabase
         .from('attendances')
         .insert({
@@ -747,6 +761,66 @@ export const supabaseService = {
         title: a.event?.title || 'GDGoC Activity',
         checked_in_at: a.checked_in_at,
       }));
+    },
+  },
+
+  // ============================================================================
+  // AUDIT LOGS SERVICE
+  // ============================================================================
+  auditLogs: {
+    async getAll(limit = 10): Promise<AuditLog[]> {
+      const { data, error } = await supabase
+        .from('audit_logs')
+        .select('*, actor:users!actor_id(id, name, email, role)')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) {
+        console.warn('Failed to fetch audit logs:', error);
+        return [];
+      }
+
+      return (data || []).map((log) => ({
+        id: log.id,
+        actor_id: log.actor_id,
+        target_id: log.target_id,
+        target_table: log.target_table,
+        action: log.action,
+        old_value: log.old_value,
+        new_value: log.new_value,
+        ip_address: log.ip_address,
+        created_at: log.created_at,
+        actor: log.actor
+          ? {
+              id: log.actor.id,
+              name: log.actor.name,
+              email: log.actor.email,
+              role: log.actor.role as Role,
+            }
+          : null,
+      }));
+    },
+
+    async log(
+      action: string,
+      targetTable: string,
+      targetId: string,
+      actorId?: string | null,
+      oldValue?: Record<string, unknown> | null,
+      newValue?: Record<string, unknown> | null
+    ): Promise<void> {
+      try {
+        await supabase.from('audit_logs').insert({
+          action,
+          target_table: targetTable,
+          target_id: targetId,
+          actor_id: actorId || null,
+          old_value: oldValue || null,
+          new_value: newValue || null,
+        });
+      } catch (err) {
+        console.warn('Failed to record audit log:', err);
+      }
     },
   },
 };

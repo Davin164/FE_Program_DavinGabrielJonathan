@@ -74,6 +74,24 @@ export interface Attendance {
   checked_in_at: string;
 }
 
+export interface AuditLog {
+  id: string;
+  actor_id?: string | null;
+  target_id?: string | null;
+  target_table?: string | null;
+  action: string;
+  old_value?: Record<string, any> | null;
+  new_value?: Record<string, any> | null;
+  ip_address?: string | null;
+  created_at: string;
+  actor?: {
+    id: string;
+    name: string;
+    email: string;
+    role: Role;
+  } | null;
+}
+
 export interface PaginationMeta {
   total: number;
   page: number;
