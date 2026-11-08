@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useEvent, useDeleteEvent } from '../../hooks/useEvents';
 import { useEventRegistrations, useRegisterForEvent, useUnregisterFromEvent } from '../../hooks/useRegistrations';
-import { useEventAttendances } from '../../hooks/useAttendances';
+import { useEventAttendances, useCancelAttendance } from '../../hooks/useAttendances';
 import { useAuth } from '../../hooks/useAuth';
 import { PageHeader } from '../../components/common/PageHeader';
 import { StatusBadge } from '../../components/common/StatusBadge';
@@ -34,6 +34,7 @@ export const EventDetailPage: React.FC = () => {
   const registerMutation = useRegisterForEvent();
   const unregisterMutation = useUnregisterFromEvent();
   const deleteEventMutation = useDeleteEvent();
+  const cancelAttendanceMutation = useCancelAttendance();
 
   const isPrivileged = Boolean(role && role !== 'MEMBER');
 
@@ -211,14 +212,34 @@ export const EventDetailPage: React.FC = () => {
                     const displayName = att.name || att.user_name || 'Member';
                     const displayEmail = att.email || att.user_email || '';
                     return (
-                      <div key={att.id} className="py-2.5 flex items-center justify-between text-xs">
+                      <div key={att.id} className="py-2.5 flex items-center justify-between text-xs hover:bg-gray-50/50 px-2 rounded-lg transition-colors">
                         <div>
                           <p className="font-semibold text-text-primary">{displayName}</p>
                           <p className="text-[11px] text-text-secondary">{displayEmail}</p>
                         </div>
-                        <span className="text-[11px] text-secondary font-medium">
-                          Checked in at {formatTime(att.checked_in_at)}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[11px] text-secondary font-medium">
+                            Checked in at {formatTime(att.checked_in_at)}
+                          </span>
+                          {(isPrivileged || att.user_id === user?.id) && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (window.confirm('Batalkan absensi peserta ini?')) {
+                                  cancelAttendanceMutation.mutate({
+                                    eventId: event.id,
+                                    attendanceId: att.id,
+                                  });
+                                }
+                              }}
+                              disabled={cancelAttendanceMutation.isPending}
+                              title="Batalkan kehadiran peserta ini"
+                              className="p-1 text-gray-400 hover:text-danger hover:bg-danger/10 rounded transition-colors"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                     );
                   })}

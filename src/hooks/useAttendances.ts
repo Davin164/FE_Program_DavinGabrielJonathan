@@ -49,3 +49,27 @@ export const useMyAttendances = () => {
     enabled: Boolean(user?.id),
   });
 };
+
+export const useCancelAttendance = () => {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async ({ eventId, attendanceId }: { eventId: string; attendanceId?: string }) => {
+      if (attendanceId) {
+        return supabaseService.attendances.deleteAttendance(attendanceId);
+      }
+      if (!user?.id) throw new Error('You must be logged in to cancel attendance');
+      return supabaseService.attendances.cancelCheckIn(eventId, user.id);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['attendances', variables.eventId] });
+      queryClient.invalidateQueries({ queryKey: ['my-attendances'] });
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      toast.success('Kehadiran berhasil dibatalkan (Attendance cancelled)');
+    },
+    onError: (err: unknown) => {
+      toast.error(getErrorMessage(err));
+    },
+  });
+};

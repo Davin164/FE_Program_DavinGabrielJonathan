@@ -723,7 +723,21 @@ export const supabaseService = {
         throw new Error('Event not found or has been removed');
       }
 
-      // 3. Check if already checked in
+      // 3. Verify event is currently ONGOING (disable attendance if not during event schedule)
+      const nowMs = Date.now();
+      const startMs = new Date(event.start_time).getTime();
+      const endMs = new Date(event.end_time).getTime();
+
+      if (nowMs < startMs) {
+        throw new Error(
+          'Sesi absensi belum dibuka. Absensi hanya dapat dilakukan saat jadwal event berlangsung.'
+        );
+      }
+      if (nowMs > endMs) {
+        throw new Error('Sesi absensi untuk event ini telah berakhir.');
+      }
+
+      // 4. Check if already checked in
       const { data: existing } = await supabase
         .from('attendances')
         .select('id')
@@ -735,7 +749,7 @@ export const supabaseService = {
         throw new Error('You have already checked in to this event');
       }
 
-      // 4. Record attendance
+      // 5. Record attendance
       const { data: newAtt, error: insertErr } = await supabase
         .from('attendances')
         .insert({
@@ -759,6 +773,25 @@ export const supabaseService = {
         user_email: newAtt.user?.email,
         checked_in_at: newAtt.checked_in_at,
       };
+    },
+
+    async cancelCheckIn(eventId: string, userId: string): Promise<void> {
+      const { error } = await supabase
+        .from('attendances')
+        .delete()
+        .eq('event_id', eventId)
+        .eq('user_id', userId);
+
+      if (error) throw new Error(error.message);
+    },
+
+    async deleteAttendance(attendanceId: string): Promise<void> {
+      const { error } = await supabase
+        .from('attendances')
+        .delete()
+        .eq('id', attendanceId);
+
+      if (error) throw new Error(error.message);
     },
 
     async getMyAttendances(userId: string): Promise<Attendance[]> {
