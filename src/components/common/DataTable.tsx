@@ -54,7 +54,9 @@ export function DataTable<T extends { id?: string | number }>({
   const limit = Number(meta?.limit) || 10;
   const total = Number(meta?.total) || 0;
   const totalPages = Math.max(
-    Number(meta?.totalPages) || Number(meta?.total_pages) || Math.ceil(total / limit) || 1,
+    limit > 0 && total > 0
+      ? Math.ceil(total / limit)
+      : Number(meta?.totalPages) || Number(meta?.total_pages) || 1,
     1
   );
 
