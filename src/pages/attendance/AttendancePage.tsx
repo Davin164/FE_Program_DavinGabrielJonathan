@@ -28,14 +28,11 @@ export const AttendancePage: React.FC = () => {
   const { role, user } = useAuth();
   const isPrivileged = Boolean(role && role !== 'MEMBER');
 
-  // State
   const [selectedEventId, setSelectedEventId] = useState<string>('');
 
-  // Queries
   const { data: eventsData, isLoading: isEventsLoading } = useEvents();
   const events = eventsData?.data || [];
 
-  // Selected event for admin view or member view
   const currentEvent =
     events.find((e) => e.id === selectedEventId) || (events.length > 0 ? events[0] : null);
 
@@ -47,7 +44,7 @@ export const AttendancePage: React.FC = () => {
   const checkInMutation = useCheckIn();
   const cancelAttendanceMutation = useCancelAttendance();
 
-  // Determine event timing status strictly using timestamps
+  // Status waktu pelaksanaan event
   const eventStatus = React.useMemo<'upcoming' | 'ongoing' | 'past'>(() => {
     if (!currentEvent) return 'upcoming';
     const now = Date.now();
@@ -63,7 +60,6 @@ export const AttendancePage: React.FC = () => {
   const isUpcoming = eventStatus === 'upcoming';
   const isPast = eventStatus === 'past';
 
-  // Check if current user has already checked in for this event
   const myCurrentCheckIn = myAttendances.find((a) => a.event_id === activeEventId);
 
   const handleCheckIn = async () => {
@@ -91,7 +87,6 @@ export const AttendancePage: React.FC = () => {
         description="Verify your attendance for ongoing GDGoC UNSRI sessions and view real-time participation logs."
       />
 
-      {/* Event Selection Dropdown */}
       <div className="p-4 bg-surface rounded-2xl border border-border shadow-subtle flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5 text-primary" />
@@ -119,7 +114,6 @@ export const AttendancePage: React.FC = () => {
 
       {currentEvent && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Member Check-in Hub */}
           <div className="lg:col-span-1 bg-surface rounded-2xl border border-border p-6 shadow-subtle flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-4">
@@ -138,7 +132,6 @@ export const AttendancePage: React.FC = () => {
                   : 'Kegiatan ini telah selesai. Sesi absensi telah ditutup.'}
               </p>
 
-              {/* Check-in Status or Button */}
               {myCurrentCheckIn ? (
                 <div className="p-5 bg-emerald-50 rounded-2xl border border-emerald-200 text-center space-y-3">
                   <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
@@ -151,7 +144,6 @@ export const AttendancePage: React.FC = () => {
                     </p>
                   </div>
 
-                  {/* Cancel Attendance Action */}
                   <div className="pt-2 border-t border-emerald-200/60">
                     <button
                       type="button"
@@ -241,7 +233,6 @@ export const AttendancePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Right 2 Cols: Attendance Roster / Records */}
           <div className="lg:col-span-2 bg-surface rounded-2xl border border-border p-6 shadow-subtle space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-border">
               <div>

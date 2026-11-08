@@ -66,7 +66,6 @@ export const EventsPage: React.FC = () => {
         }
       />
 
-      {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 bg-surface rounded-2xl border border-border shadow-subtle">
         <SearchInput
           value={search}
@@ -75,7 +74,6 @@ export const EventsPage: React.FC = () => {
           className="max-w-md"
         />
 
-        {/* Tab Filters */}
         <div className="flex items-center bg-gray-100 p-1 rounded-xl">
           <button
             type="button"
@@ -113,7 +111,6 @@ export const EventsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Events Grid */}
       {isLoading ? (
         <LoadingSpinner size="xl" className="py-24" label="Loading events..." />
       ) : events.length === 0 ? (
@@ -141,11 +138,9 @@ export const EventsPage: React.FC = () => {
                 className="bg-surface rounded-2xl border border-border overflow-hidden shadow-subtle hover:shadow-card transition-all flex flex-col justify-between"
               >
                 <div>
-                  {/* Top Color Accent */}
                   <div className="h-2 bg-gradient-to-r from-primary via-secondary to-accent" />
 
                   <div className="p-5 space-y-4">
-                    {/* Header info */}
                     <div className="flex items-start justify-between gap-2">
                       <StatusBadge status={isPast ? 'past' : isFull ? 'full' : 'upcoming'} />
                       <span className="text-[11px] text-text-secondary font-medium">
@@ -153,7 +148,6 @@ export const EventsPage: React.FC = () => {
                       </span>
                     </div>
 
-                    {/* Event Title */}
                     <div>
                       <Link
                         to={`/events/${evt.id}`}
@@ -168,7 +162,6 @@ export const EventsPage: React.FC = () => {
                       )}
                     </div>
 
-                    {/* Metadata details */}
                     <div className="space-y-2 pt-2 border-t border-border/60 text-xs text-text-secondary">
                       <div className="flex items-center gap-2">
                         <Clock className="w-4 h-4 text-primary shrink-0" />
@@ -186,7 +179,6 @@ export const EventsPage: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Quota Progress Bar */}
                     <div className="space-y-1">
                       <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                         <div
@@ -204,7 +196,6 @@ export const EventsPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Footer Action */}
                 <div className="p-4 bg-gray-50/70 border-t border-border flex items-center justify-between gap-3">
                   <Link
                     to={`/events/${evt.id}`}

@@ -117,7 +117,6 @@ export const EventDetailPage: React.FC = () => {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left 2 Cols: Main Info & Description */}
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-surface rounded-2xl border border-border p-6 shadow-subtle space-y-4">
             <div className="flex items-center justify-between">
@@ -134,7 +133,6 @@ export const EventDetailPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Registrations List (LEAD / DIV_HEAD only) */}
           {isPrivileged && (
             <div className="bg-surface rounded-2xl border border-border p-6 shadow-subtle space-y-4">
               <div className="flex items-center justify-between">
@@ -185,7 +183,6 @@ export const EventDetailPage: React.FC = () => {
             </div>
           )}
 
-          {/* Attendance Check-in Logs (LEAD / DIV_HEAD only) */}
           {isPrivileged && (
             <div className="bg-surface rounded-2xl border border-border p-6 shadow-subtle space-y-4">
               <div className="flex items-center justify-between">
@@ -249,7 +246,6 @@ export const EventDetailPage: React.FC = () => {
           )}
         </div>
 
-        {/* Right Col: Logistics & Registration Action Card */}
         <div className="space-y-6">
           <div className="bg-surface rounded-2xl border border-border p-6 shadow-subtle space-y-6">
             <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider pb-2 border-b border-border">
@@ -291,7 +287,6 @@ export const EventDetailPage: React.FC = () => {
                     <span className="text-xs font-normal text-text-secondary">{percentage}%</span>
                   </div>
 
-                  {/* Progress bar */}
                   <div className="w-full bg-gray-100 rounded-full h-2 mt-1.5 overflow-hidden">
                     <div
                       className={`h-2 rounded-full transition-all duration-300 ${
@@ -304,7 +299,6 @@ export const EventDetailPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Registration Action */}
             {!isPast && (
               <div className="pt-4 border-t border-border">
                 <button
@@ -347,7 +341,6 @@ export const EventDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Confirm Delete Event Modal */}
       <ConfirmDialog
         isOpen={isDeleteOpen}
         title="Delete Event"

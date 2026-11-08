@@ -14,9 +14,7 @@ import {
 } from '../types';
 
 export const supabaseService = {
-  // ============================================================================
-  // AUTH SERVICE
-  // ============================================================================
+  // Auth
   auth: {
     async login(email: string, password: string): Promise<{ user: User; token: string }> {
       // Find user by email
@@ -154,9 +152,7 @@ export const supabaseService = {
     },
   },
 
-  // ============================================================================
-  // EVENTS SERVICE
-  // ============================================================================
+  // Events
   events: {
     async getAll(params: EventQueryParams = {}, currentUserId?: string): Promise<ApiResponse<Event[]>> {
       let query = supabase
@@ -407,9 +403,7 @@ export const supabaseService = {
     },
   },
 
-  // ============================================================================
-  // MEMBERS SERVICE
-  // ============================================================================
+  // Members
   members: {
     async getAll(params: MemberQueryParams = {}): Promise<ApiResponse<User[]>> {
       let query = supabase
@@ -627,9 +621,7 @@ export const supabaseService = {
     },
   },
 
-  // ============================================================================
-  // REGISTRATIONS SERVICE
-  // ============================================================================
+  // Registrations
   registrations: {
     async getByEvent(eventId: string): Promise<Registration[]> {
       const { data, error } = await supabase
@@ -655,7 +647,7 @@ export const supabaseService = {
     },
 
     async register(eventId: string, userId: string): Promise<Registration> {
-      // 1. Check if event is valid and quota is available
+      // Pastikan event ada dan aktif
       const { data: event, error: eventErr } = await supabase
         .from('events')
         .select('id, title, quota, is_deleted')
@@ -666,7 +658,7 @@ export const supabaseService = {
         throw new Error('Event not found or has been canceled');
       }
 
-      // 2. Check if already registered
+      // Cek apakah sudah terdaftar
       const { data: existingReg } = await supabase
         .from('registrations')
         .select('id')
@@ -678,7 +670,7 @@ export const supabaseService = {
         throw new Error('You are already registered for this event');
       }
 
-      // 3. Check current registration count
+      // Cek ketersediaan kuota
       const { count } = await supabase
         .from('registrations')
         .select('*', { count: 'exact', head: true })
@@ -688,7 +680,6 @@ export const supabaseService = {
         throw new Error('Registration failed: Event quota is full');
       }
 
-      // 4. Insert registration
       const { data: newReg, error: insertErr } = await supabase
         .from('registrations')
         .insert({
@@ -724,9 +715,7 @@ export const supabaseService = {
     },
   },
 
-  // ============================================================================
-  // ATTENDANCES SERVICE
-  // ============================================================================
+  // Attendances
   attendances: {
     async getByEvent(eventId: string): Promise<Attendance[]> {
       const { data, error } = await supabase
@@ -750,7 +739,7 @@ export const supabaseService = {
     },
 
     async checkIn(eventId: string, userId: string): Promise<Attendance> {
-      // 1. Verify user exists first to prevent foreign key errors if session is stale
+      // Pastikan user valid di database
       const { data: userRecord, error: userErr } = await supabase
         .from('users')
         .select('id, name, email')
@@ -763,7 +752,7 @@ export const supabaseService = {
         );
       }
 
-      // 2. Verify event exists
+      // Pastikan event valid dan aktif
       const { data: event, error: eventErr } = await supabase
         .from('events')
         .select('id, title, start_time, end_time, is_deleted')
@@ -774,7 +763,7 @@ export const supabaseService = {
         throw new Error('Event not found or has been removed');
       }
 
-      // 3. Verify event is currently ONGOING (disable attendance if not during event schedule)
+      // Absensi hanya dibuka saat jadwal pelaksanaan
       const nowMs = Date.now();
       const startMs = new Date(event.start_time).getTime();
       const endMs = new Date(event.end_time).getTime();
@@ -788,7 +777,7 @@ export const supabaseService = {
         throw new Error('Sesi absensi untuk event ini telah berakhir.');
       }
 
-      // 4. Check if already checked in
+      // Cek apakah sudah pernah absen
       const { data: existing } = await supabase
         .from('attendances')
         .select('id')
@@ -800,7 +789,7 @@ export const supabaseService = {
         throw new Error('You have already checked in to this event');
       }
 
-      // 5. Record attendance
+      // Catat absensi
       const { data: newAtt, error: insertErr } = await supabase
         .from('attendances')
         .insert({
@@ -864,9 +853,7 @@ export const supabaseService = {
     },
   },
 
-  // ============================================================================
-  // AUDIT LOGS SERVICE
-  // ============================================================================
+  // Audit Logs
   auditLogs: {
     async getAll(limit = 10): Promise<AuditLog[]> {
       const { data, error } = await supabase

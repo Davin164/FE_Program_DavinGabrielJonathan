@@ -39,11 +39,9 @@ export const App: React.FC = () => {
           <BrowserRouter>
             <Toaster position="top-right" richColors closeButton />
             <Routes>
-              {/* Public Auth Routes */}
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
 
-              {/* Protected App Routes */}
               <Route
                 element={
                   <ProtectedRoute>
@@ -51,13 +49,9 @@ export const App: React.FC = () => {
                   </ProtectedRoute>
                 }
               >
-                {/* Default route redirects to dashboard */}
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
-
-                {/* Dashboard */}
                 <Route path="/dashboard" element={<DashboardPage />} />
 
-                {/* Members */}
                 <Route path="/members" element={<MembersPage />} />
                 <Route
                   path="/members/new"
@@ -77,7 +71,6 @@ export const App: React.FC = () => {
                   }
                 />
 
-                {/* Events */}
                 <Route path="/events" element={<EventsPage />} />
                 <Route
                   path="/events/new"
@@ -117,14 +110,10 @@ export const App: React.FC = () => {
                   }
                 />
 
-                {/* Attendance */}
                 <Route path="/attendance" element={<AttendancePage />} />
-
-                {/* User Profile */}
                 <Route path="/profile" element={<ProfilePage />} />
               </Route>
 
-              {/* Catch-all 404 Route */}
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
           </BrowserRouter>

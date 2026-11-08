@@ -20,7 +20,6 @@ export const MembersPage: React.FC = () => {
   const [sortBy, setSortBy] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
-  // Deletion modal state
   const [memberToDelete, setMemberToDelete] = useState<User | null>(null);
 
   const { data: divisions = [] } = useDivisions();
@@ -163,7 +162,6 @@ export const MembersPage: React.FC = () => {
         }
       />
 
-      {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 bg-surface rounded-2xl border border-border shadow-subtle">
         <SearchInput
           value={search}
@@ -181,7 +179,6 @@ export const MembersPage: React.FC = () => {
             <span>Filters:</span>
           </div>
 
-          {/* Role Filter */}
           <select
             value={selectedRole}
             onChange={(e) => {
@@ -201,7 +198,6 @@ export const MembersPage: React.FC = () => {
             <option value="MEMBER">Member</option>
           </select>
 
-          {/* Division Filter */}
           <select
             value={selectedDivision}
             onChange={(e) => {
@@ -220,7 +216,6 @@ export const MembersPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Data Table */}
       <DataTable
         columns={columns}
         data={data?.data || []}
@@ -238,7 +233,6 @@ export const MembersPage: React.FC = () => {
         emptyDescription="We couldn't find any member matching your criteria. Try resetting filters."
       />
 
-      {/* Confirmation Dialog for Deletion */}
       <ConfirmDialog
         isOpen={Boolean(memberToDelete)}
         title="Delete Member"

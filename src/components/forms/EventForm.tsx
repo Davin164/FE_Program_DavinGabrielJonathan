@@ -75,7 +75,6 @@ export const EventForm: React.FC<EventFormProps> = ({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Title */}
         <div className="md:col-span-2">
           <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
             Event Title *
@@ -89,7 +88,6 @@ export const EventForm: React.FC<EventFormProps> = ({
           {errors.title && <p className="mt-1 text-xs text-danger">{errors.title.message}</p>}
         </div>
 
-        {/* Location */}
         <div>
           <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
             Location / Venue *
@@ -103,7 +101,6 @@ export const EventForm: React.FC<EventFormProps> = ({
           {errors.location && <p className="mt-1 text-xs text-danger">{errors.location.message}</p>}
         </div>
 
-        {/* Quota */}
         <div>
           <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
             Participant Quota *
@@ -118,7 +115,6 @@ export const EventForm: React.FC<EventFormProps> = ({
           {errors.quota && <p className="mt-1 text-xs text-danger">{errors.quota.message}</p>}
         </div>
 
-        {/* Start Time */}
         <div>
           <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
             Start Time *
@@ -133,7 +129,6 @@ export const EventForm: React.FC<EventFormProps> = ({
           )}
         </div>
 
-        {/* End Time */}
         <div>
           <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
             End Time *
@@ -146,7 +141,6 @@ export const EventForm: React.FC<EventFormProps> = ({
           {errors.end_time && <p className="mt-1 text-xs text-danger">{errors.end_time.message}</p>}
         </div>
 
-        {/* Description */}
         <div className="md:col-span-2">
           <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
             Event Description
@@ -163,7 +157,6 @@ export const EventForm: React.FC<EventFormProps> = ({
         </div>
       </div>
 
-      {/* Buttons */}
       <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
         {onCancel && (
           <button

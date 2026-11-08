@@ -72,7 +72,6 @@ export const RegisterPage: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-lg bg-surface rounded-3xl border border-border p-8 shadow-card">
-        {/* Header */}
         <div className="flex flex-col items-center text-center">
           <img src="/LogoGDG.webp" alt="GDGoC Logo" className="w-14 h-14 mb-3 rounded-2xl object-cover shadow-subtle" />
           <h1 className="text-2xl font-bold text-text-primary tracking-tight">
@@ -83,9 +82,7 @@ export const RegisterPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
-          {/* Full Name */}
           <div>
             <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
               Full Name *
@@ -102,7 +99,6 @@ export const RegisterPage: React.FC = () => {
             {errors.name && <p className="mt-1 text-xs text-danger">{errors.name.message}</p>}
           </div>
 
-          {/* Email */}
           <div>
             <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
               Email Address *
@@ -120,7 +116,6 @@ export const RegisterPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Password */}
             <div>
               <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
                 Password *
@@ -139,7 +134,6 @@ export const RegisterPage: React.FC = () => {
               )}
             </div>
 
-            {/* Confirm Password */}
             <div>
               <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
                 Confirm Password *
@@ -160,7 +154,6 @@ export const RegisterPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* NIM */}
             <div>
               <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
                 NIM (Student ID)
@@ -177,7 +170,6 @@ export const RegisterPage: React.FC = () => {
               {errors.nim && <p className="mt-1 text-xs text-danger">{errors.nim.message}</p>}
             </div>
 
-            {/* Phone */}
             <div>
               <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
                 WhatsApp Phone
@@ -195,7 +187,6 @@ export const RegisterPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Division Interest */}
           <div>
             <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
               Division Interest

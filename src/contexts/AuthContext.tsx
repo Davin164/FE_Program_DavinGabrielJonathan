@@ -49,7 +49,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Helper to store tokens and user
   const setAuthData = (token: string, refreshToken?: string, userData?: User) => {
     localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
     if (refreshToken) {
@@ -61,7 +60,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Helper to clear tokens and user
   const clearAuthData = () => {
     localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
     localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
@@ -69,7 +67,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser(null);
   };
 
-  // Fetch current user from Supabase
   const fetchCurrentUser = useCallback(async () => {
     const cached = localStorage.getItem(STORAGE_KEYS.USER);
     if (!cached) {
@@ -97,11 +94,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     fetchCurrentUser();
 
-    // Listen for Supabase OAuth redirect (Google Sign-In)
+    // Listener login OAuth Google
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session?.user?.email) {
         try {
-          // Check if Google user exists in public.users
           const { data: existingUser } = await supabase
             .from('users')
             .select('*, division:divisions(id, name)')
@@ -123,7 +119,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               updated_at: existingUser.updated_at,
             };
           } else {
-            // Auto-provision Google account as MEMBER
+            // User Google baru otomatis terdaftar sebagai MEMBER
             const { data: newUser } = await supabase
               .from('users')
               .insert({

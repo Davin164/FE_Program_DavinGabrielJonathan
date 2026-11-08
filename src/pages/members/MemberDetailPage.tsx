@@ -59,7 +59,6 @@ export const MemberDetailPage: React.FC = () => {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Profile Card */}
         <div className="bg-surface rounded-2xl border border-border p-6 shadow-subtle flex flex-col items-center text-center">
           <div className="w-20 h-20 rounded-full bg-primary-light text-primary font-bold text-2xl flex items-center justify-center mb-4 shadow-subtle">
             {member.name.charAt(0).toUpperCase()}
@@ -77,7 +76,6 @@ export const MemberDetailPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Member Details */}
         <div className="md:col-span-2 bg-surface rounded-2xl border border-border p-6 shadow-subtle">
           <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider mb-4 pb-2 border-b border-border">
             Academic & Contact Details

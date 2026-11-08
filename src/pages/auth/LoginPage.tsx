@@ -69,7 +69,6 @@ export const LoginPage: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-md bg-surface rounded-3xl border border-border p-8 shadow-card">
-        {/* Header */}
         <div className="flex flex-col items-center text-center">
           <img src="/LogoGDG.webp" alt="GDGoC Logo" className="w-16 h-16 mb-3 rounded-2xl object-cover shadow-subtle" />
           <h1 className="text-2xl font-bold text-text-primary tracking-tight">GDGoC UNSRI</h1>
@@ -81,7 +80,6 @@ export const LoginPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Google OAuth Button */}
         <div className="mt-8">
           <button
             type="button"
@@ -115,7 +113,6 @@ export const LoginPage: React.FC = () => {
           </button>
         </div>
 
-        {/* Divider */}
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-border" />
@@ -125,7 +122,6 @@ export const LoginPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
@@ -177,7 +173,6 @@ export const LoginPage: React.FC = () => {
           </button>
         </form>
 
-        {/* Demo Accounts Quick-Fill */}
         <div className="mt-6 pt-5 border-t border-border">
           <p className="text-[11px] font-semibold text-text-secondary uppercase tracking-wider mb-2.5 text-center">
             Pilihan Akun Uji Coba (Klik untuk Isi Otomatis)
@@ -228,7 +223,6 @@ export const LoginPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Footer Link */}
         <p className="mt-6 text-center text-xs text-text-secondary">
           Don&apos;t have an account yet?{' '}
           <Link to="/register" className="font-semibold text-primary hover:underline">

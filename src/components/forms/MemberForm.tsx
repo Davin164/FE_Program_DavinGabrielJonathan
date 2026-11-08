@@ -68,7 +68,6 @@ export const MemberForm: React.FC<MemberFormProps> = ({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Full Name */}
         <div className="md:col-span-2">
           <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
             Full Name *
@@ -82,7 +81,6 @@ export const MemberForm: React.FC<MemberFormProps> = ({
           {errors.name && <p className="mt-1 text-xs text-danger">{errors.name.message}</p>}
         </div>
 
-        {/* Email */}
         <div className={isEdit ? 'md:col-span-2' : ''}>
           <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
             Email Address {isEdit ? '(Fixed)' : '*'}
@@ -101,7 +99,6 @@ export const MemberForm: React.FC<MemberFormProps> = ({
           {errors.email && <p className="mt-1 text-xs text-danger">{errors.email.message}</p>}
         </div>
 
-        {/* Password (only when creating a new member) */}
         {!isEdit && (
           <div>
             <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
@@ -117,7 +114,6 @@ export const MemberForm: React.FC<MemberFormProps> = ({
           </div>
         )}
 
-        {/* Role */}
         <div>
           <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
             Role *
@@ -138,7 +134,6 @@ export const MemberForm: React.FC<MemberFormProps> = ({
           {errors.role && <p className="mt-1 text-xs text-danger">{errors.role.message}</p>}
         </div>
 
-        {/* Division */}
         <div>
           <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
             Division
@@ -159,7 +154,6 @@ export const MemberForm: React.FC<MemberFormProps> = ({
           )}
         </div>
 
-        {/* Student ID / NIM */}
         <div>
           <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
             NIM (Student ID)
@@ -173,7 +167,6 @@ export const MemberForm: React.FC<MemberFormProps> = ({
           {errors.nim && <p className="mt-1 text-xs text-danger">{errors.nim.message}</p>}
         </div>
 
-        {/* Phone */}
         <div>
           <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
             Phone / WhatsApp Number
@@ -188,7 +181,6 @@ export const MemberForm: React.FC<MemberFormProps> = ({
         </div>
       </div>
 
-      {/* Buttons */}
       <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
         {onCancel && (
           <button

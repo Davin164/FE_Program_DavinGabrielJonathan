@@ -262,9 +262,7 @@ INSERT INTO audit_logs (actor_id, target_id, target_table, action, old_value, ne
     NOW() - INTERVAL '12 hours'
   );
 
--- ==============================================================================
--- 7. ENABLE ROW LEVEL SECURITY & OPEN ACCESS POLICIES FOR FRONT-END BAAS CLIENT
--- ==============================================================================
+-- 7. Policy akses tabel untuk BaaS client
 ALTER TABLE divisions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
@@ -291,15 +289,7 @@ DROP POLICY IF EXISTS "BaaS audit_logs policy" ON audit_logs;
 CREATE POLICY "BaaS audit_logs policy" ON audit_logs FOR ALL USING (true) WITH CHECK (true);
 
 
--- ==============================================================================
--- GDGoC UNSRI â€” Database-level business rules (idempotent, SAFE to re-run)
--- Jalankan di Supabase Dashboard -> SQL Editor. TIDAK menghapus data apa pun.
---
--- Kenapa di database, bukan hanya di React?
---   Validasi di sisi browser mudah dilewati. Dua aturan bisnis kritis di bawah
---   ini dipaksa langsung oleh PostgreSQL sehingga tetap berlaku untuk request
---   apa pun yang masuk ke tabel.
--- ==============================================================================
+-- Aturan bisnis database (enforce kuota dan jadwal absensi)
 
 -- 1) KUOTA EVENT TIDAK BOLEH TERLAMPAUI (aman untuk request bersamaan)
 --    SELECT ... FOR UPDATE mengunci baris event, sehingga dua pendaftar yang

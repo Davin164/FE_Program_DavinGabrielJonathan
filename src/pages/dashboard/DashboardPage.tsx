@@ -47,7 +47,6 @@ export const DashboardPage: React.FC = () => {
         }
       />
 
-      {/* Quick Action Bar for Roles */}
       <div className="p-4 bg-surface rounded-2xl border border-border shadow-subtle flex flex-wrap items-center justify-between gap-3">
         <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
           Quick Actions:
@@ -103,9 +102,7 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Stats Cards Grid (3 Columns) */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {/* Total Members */}
         <div className="bg-surface p-5 rounded-2xl border border-border shadow-subtle flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
@@ -121,7 +118,6 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Completed Events */}
         <div className="bg-surface p-5 rounded-2xl border border-border shadow-subtle flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
@@ -137,7 +133,6 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Upcoming Events */}
         <div className="bg-surface p-5 rounded-2xl border border-border shadow-subtle flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
@@ -154,7 +149,6 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Dashboard Section: Upcoming Events List */}
       <div className="bg-surface rounded-2xl border border-border shadow-subtle p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -209,7 +203,7 @@ export const DashboardPage: React.FC = () => {
         )}
       </div>
 
-      {/* Audit Logs Section — visible to executives only (Lead s.d. Core Team) */}
+      {/* Audit logs hanya untuk pengurus (Lead s.d. Core Team) */}
       {role && role !== 'MEMBER' && (
       <div className="bg-surface rounded-2xl border border-border shadow-subtle p-6">
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-border">

@@ -43,7 +43,6 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ user, onSubmit, isLoad
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {/* Full Name */}
           <div>
             <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
               Full Name *
@@ -56,7 +55,6 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ user, onSubmit, isLoad
             {errors.name && <p className="mt-1 text-xs text-danger">{errors.name.message}</p>}
           </div>
 
-          {/* Email (Readonly) */}
           <div>
             <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
               Email Address (Fixed)
@@ -69,7 +67,6 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ user, onSubmit, isLoad
             />
           </div>
 
-          {/* NIM */}
           <div>
             <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
               NIM (Student ID)
@@ -83,7 +80,6 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ user, onSubmit, isLoad
             {errors.nim && <p className="mt-1 text-xs text-danger">{errors.nim.message}</p>}
           </div>
 
-          {/* Phone */}
           <div>
             <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
               Phone / WhatsApp Number

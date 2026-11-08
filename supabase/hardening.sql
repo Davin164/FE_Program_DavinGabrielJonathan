@@ -1,12 +1,5 @@
--- ==============================================================================
--- GDGoC UNSRI — Database-level business rules (idempotent, SAFE to re-run)
--- Jalankan di Supabase Dashboard -> SQL Editor. TIDAK menghapus data apa pun.
---
--- Kenapa di database, bukan hanya di React?
---   Validasi di sisi browser mudah dilewati. Dua aturan bisnis kritis di bawah
---   ini dipaksa langsung oleh PostgreSQL sehingga tetap berlaku untuk request
---   apa pun yang masuk ke tabel.
--- ==============================================================================
+-- GDGoC UNSRI - Aturan bisnis database (idempoten)
+-- Menjaga kuota pendaftaran dan jadwal absensi langsung di level PostgreSQL.
 
 -- 1) KUOTA EVENT TIDAK BOLEH TERLAMPAUI (aman untuk request bersamaan)
 --    SELECT ... FOR UPDATE mengunci baris event, sehingga dua pendaftar yang
@@ -71,3 +64,4 @@ DROP TRIGGER IF EXISTS trg_enforce_attendance_window ON attendances;
 CREATE TRIGGER trg_enforce_attendance_window
   BEFORE INSERT ON attendances
   FOR EACH ROW EXECUTE FUNCTION enforce_attendance_window();
+
