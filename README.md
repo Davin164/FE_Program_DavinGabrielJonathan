@@ -40,14 +40,14 @@ Aplikasi menerapkan 7 Role resmi sesuai struktur kepengurusan GDGoC Universitas 
 
 | Role | Email | Password | Cakupan Wewenang |
 | :--- | :--- | :--- | :--- |
-| **LEAD** | `lead@gdgoc.unsri.ac.id` | `Password123!` | Pimpinan tertinggi chapter; akses penuh ke seluruh manajemen anggota, ubah role, buat/hapus event, kelola absensi. |
-| **CO_LEAD** | `colead@gdgoc.unsri.ac.id` | `Password123!` | Wakil pimpinan chapter; mengelola anggota, membuat event, dan memantau kehadiran. |
-| **SECRETARY** | `secretary@gdgoc.unsri.ac.id` | `Password123!` | Sekretaris chapter; mengelola administrasi, membuat event, dan memantau kehadiran kegiatan. |
-| **TREASURER** | `treasurer@gdgoc.unsri.ac.id` | `Password123!` | Bendahara chapter; mengelola pendataan operasional kegiatan, membuat event, dan memantau kehadiran. |
-| **TECHNICAL_DIVISION** | `tech@gdgoc.unsri.ac.id` | `Password123!` | Divisi teknis (Web, Mobile, Cloud, AI); mengorganisir workshop teknis, hands-on labs, dan absensi peserta. |
-| **NON_TECHNICAL_DIVISION** | `nontech@gdgoc.unsri.ac.id` | `Password123!` | Divisi non-teknis (Creative UI/UX, PR, Logistics); mengelola event komunitas, seminar, dan presensi. |
-| **MEMBER** | `davin@gdgoc.unsri.ac.id` | `Password123!` | Anggota terdaftar; eksplorasi kegiatan, pendaftaran event bersaing, self check-in saat acara berlangsung. |
-| **MEMBER (Secondary)** | `member2@gdgoc.unsri.ac.id` | `Password123!` | Akun anggota kedua untuk pengujian perebutan kuota (*race condition*). |
+| **LEAD** | `lead.gdgoc@gmail.com` | `Password123!` | Pimpinan tertinggi chapter; akses penuh ke seluruh manajemen anggota, ubah role, buat/hapus event, kelola absensi. |
+| **CO_LEAD** | `colead.gdgoc@gmail.com` | `Password123!` | Wakil pimpinan chapter; mengelola anggota, membuat event, dan memantau kehadiran. |
+| **SECRETARY** | `secretary.gdgoc@gmail.com` | `Password123!` | Sekretaris chapter; mengelola administrasi, membuat event, dan memantau kehadiran kegiatan. |
+| **TREASURER** | `treasurer.gdgoc@gmail.com` | `Password123!` | Bendahara chapter; mengelola pendataan operasional kegiatan, membuat event, dan memantau kehadiran. |
+| **TECHNICAL_DIVISION** | `tech.gdgoc@gmail.com` | `Password123!` | Divisi teknis (Web, Mobile, Cloud, AI); mengorganisir workshop teknis, hands-on labs, dan absensi peserta. |
+| **NON_TECHNICAL_DIVISION** | `nontech.gdgoc@gmail.com` | `Password123!` | Divisi non-teknis (Creative UI/UX, PR, Logistics); mengelola event komunitas, seminar, dan presensi. |
+| **MEMBER** | `davingabrieljonathan@gmail.com` | `Password123!` | Anggota terdaftar; eksplorasi kegiatan, pendaftaran event bersaing, self check-in saat acara berlangsung. |
+| **MEMBER (Secondary)** | `member.gdgoc@gmail.com` | `Password123!` | Akun anggota kedua untuk pengujian perebutan kuota (*race condition*). |
 
 ---
 

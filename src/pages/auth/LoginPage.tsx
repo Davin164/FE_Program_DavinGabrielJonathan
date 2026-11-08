@@ -28,6 +28,7 @@ export const LoginPage: React.FC = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -36,6 +37,11 @@ export const LoginPage: React.FC = () => {
       password: '',
     },
   });
+
+  const selectDemoAccount = (email: string) => {
+    setValue('email', email, { shouldValidate: true });
+    setValue('password', 'Password123!', { shouldValidate: true });
+  };
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
@@ -170,6 +176,43 @@ export const LoginPage: React.FC = () => {
             )}
           </button>
         </form>
+
+        {/* Demo Accounts Quick-Fill */}
+        <div className="mt-6 pt-5 border-t border-border">
+          <p className="text-[11px] font-semibold text-text-secondary uppercase tracking-wider mb-2.5 text-center">
+            Pilihan Akun Uji Coba (Klik untuk Isi Otomatis)
+          </p>
+          <div className="flex flex-wrap gap-1.5 justify-center">
+            <button
+              type="button"
+              onClick={() => selectDemoAccount('lead.gdgoc@gmail.com')}
+              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+            >
+              👑 Lead Admin
+            </button>
+            <button
+              type="button"
+              onClick={() => selectDemoAccount('tech.gdgoc@gmail.com')}
+              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition-colors"
+            >
+              💻 Tech Officer
+            </button>
+            <button
+              type="button"
+              onClick={() => selectDemoAccount('nontech.gdgoc@gmail.com')}
+              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
+            >
+              🎨 Non-Tech Officer
+            </button>
+            <button
+              type="button"
+              onClick={() => selectDemoAccount('davingabrieljonathan@gmail.com')}
+              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+            >
+              👤 Member (Davin)
+            </button>
+          </div>
+        </div>
 
         {/* Footer Link */}
         <p className="mt-6 text-center text-xs text-text-secondary">
