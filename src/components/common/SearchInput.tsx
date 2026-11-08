@@ -11,33 +11,47 @@ interface SearchInputProps {
 }
 
 export const SearchInput: React.FC<SearchInputProps> = ({
-  value: initialValue = '',
+  value = '',
   onChange,
   placeholder = 'Search...',
   className,
   debounceMs = 300,
 }) => {
-  const [query, setQuery] = useState(initialValue);
-  const isFirstRender = useRef(true);
-  const onChangeRef = useRef(onChange);
-  onChangeRef.current = onChange;
+  const [query, setQuery] = useState(value);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    setQuery(initialValue);
-  }, [initialValue]);
+    setQuery(value);
+  }, [value]);
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setQuery(val);
+
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
     }
 
-    const handler = setTimeout(() => {
-      onChangeRef.current(query);
+    timerRef.current = setTimeout(() => {
+      onChange(val);
     }, debounceMs);
+  };
 
-    return () => clearTimeout(handler);
-  }, [query, debounceMs]);
+  const handleClear = () => {
+    setQuery('');
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    onChange('');
+  };
 
   return (
     <div className={cn('relative flex items-center w-full max-w-sm', className)}>
@@ -45,17 +59,14 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       <input
         type="text"
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={handleChange}
         placeholder={placeholder}
         className="w-full pl-10 pr-9 py-2 text-sm bg-surface border border-border rounded-lg text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-subtle"
       />
       {query && (
         <button
           type="button"
-          onClick={() => {
-            setQuery('');
-            onChangeRef.current('');
-          }}
+          onClick={handleClear}
           className="absolute right-3 text-text-secondary hover:text-text-primary p-0.5 rounded-full hover:bg-gray-100 transition-colors"
         >
           <X className="w-3.5 h-3.5" />

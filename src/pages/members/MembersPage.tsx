@@ -222,7 +222,7 @@ export const MembersPage: React.FC = () => {
         columns={columns}
         data={data?.data || []}
         isLoading={isLoading}
-        meta={data?.meta}
+        meta={data?.meta ? { ...data.meta, page, limit } : undefined}
         onPageChange={(p) => setPage(p)}
         onPageSizeChange={(sz) => {
           setLimit(sz);

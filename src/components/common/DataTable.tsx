@@ -50,6 +50,14 @@ export function DataTable<T extends { id?: string | number }>({
     );
   };
 
+  const page = Number(meta?.page) || 1;
+  const limit = Number(meta?.limit) || 10;
+  const total = Number(meta?.total) || 0;
+  const totalPages = Math.max(
+    Number(meta?.totalPages) || Number(meta?.total_pages) || Math.ceil(total / limit) || 1,
+    1
+  );
+
   return (
     <div className="bg-surface rounded-xl border border-border shadow-subtle overflow-hidden">
       <div className="overflow-x-auto">
@@ -111,104 +119,88 @@ export function DataTable<T extends { id?: string | number }>({
         </table>
       </div>
 
-      {/* Pagination Footer */}
-      {meta && (() => {
-        const totalPages = Math.max(
-          meta.totalPages ?? meta.total_pages ?? Math.ceil(meta.total / (meta.limit || 10)) ?? 1,
-          1
-        );
+      {meta && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-border bg-gray-50/30 text-xs text-text-secondary">
+          <div className="flex items-center gap-2">
+            <span>
+              Showing{' '}
+              <span className="font-semibold text-text-primary">
+                {total === 0 ? 0 : (page - 1) * limit + 1}
+              </span>{' '}
+              to{' '}
+              <span className="font-semibold text-text-primary">
+                {Math.min(page * limit, total)}
+              </span>{' '}
+              of <span className="font-semibold text-text-primary">{total}</span> entries
+            </span>
 
-        return (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-border bg-gray-50/30 text-xs text-text-secondary">
-            <div className="flex items-center gap-2">
-              <span>
-                Showing{' '}
-                <span className="font-semibold text-text-primary">
-                  {meta.total === 0 ? 0 : (meta.page - 1) * meta.limit + 1}
-                </span>{' '}
-                to{' '}
-                <span className="font-semibold text-text-primary">
-                  {Math.min(meta.page * meta.limit, meta.total)}
-                </span>{' '}
-                of <span className="font-semibold text-text-primary">{meta.total}</span> entries
-              </span>
-
-              {onPageSizeChange && (
-                <select
-                  value={meta.limit}
-                  onChange={(e) => onPageSizeChange(Number(e.target.value))}
-                  className="ml-3 bg-surface border border-border rounded-md px-2 py-1 text-xs text-text-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                >
-                  <option value={5}>5 per page</option>
-                  <option value={10}>10 per page</option>
-                  <option value={25}>25 per page</option>
-                  <option value={50}>50 per page</option>
-                </select>
-              )}
-            </div>
-
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => onPageChange?.(1)}
-                disabled={meta.page <= 1}
-                className="p-1.5 rounded-lg border border-border bg-surface text-text-primary hover:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
-                title="First page"
+            {onPageSizeChange && (
+              <select
+                value={limit}
+                onChange={(e) => onPageSizeChange(Number(e.target.value))}
+                className="ml-3 bg-surface border border-border rounded-md px-2 py-1 text-xs text-text-primary focus:outline-none focus:ring-1 focus:ring-primary shadow-subtle cursor-pointer"
               >
-                <ChevronsLeft className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => onPageChange?.(meta.page - 1)}
-                disabled={meta.page <= 1}
-                className="p-1.5 rounded-lg border border-border bg-surface text-text-primary hover:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
-                title="Previous page"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-              </button>
-
-              <div className="flex items-center gap-1 mx-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => {
-                  const isActive = p === meta.page;
-                  return (
-                    <button
-                      key={p}
-                      type="button"
-                      onClick={() => onPageChange?.(p)}
-                      className={`min-w-[28px] h-7 px-2 text-xs font-semibold rounded-lg transition-all ${
-                        isActive
-                          ? 'bg-primary text-white shadow-subtle'
-                          : 'bg-surface border border-border text-text-secondary hover:text-text-primary hover:bg-gray-100'
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <button
-                type="button"
-                onClick={() => onPageChange?.(meta.page + 1)}
-                disabled={meta.page >= totalPages}
-                className="p-1.5 rounded-lg border border-border bg-surface text-text-primary hover:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
-                title="Next page"
-              >
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => onPageChange?.(totalPages)}
-                disabled={meta.page >= totalPages}
-                className="p-1.5 rounded-lg border border-border bg-surface text-text-primary hover:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
-                title="Last page"
-              >
-                <ChevronsRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
+                <option value={5}>5 per page</option>
+                <option value={10}>10 per page</option>
+                <option value={25}>25 per page</option>
+                <option value={50}>50 per page</option>
+              </select>
+            )}
           </div>
-        );
-      })()}
+
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => {
+                if (page > 1) onPageChange?.(1);
+              }}
+              disabled={page <= 1}
+              className="p-1.5 rounded-lg border border-border bg-surface text-text-primary hover:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              title="First page"
+            >
+              <ChevronsLeft className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (page > 1) onPageChange?.(page - 1);
+              }}
+              disabled={page <= 1}
+              className="p-1.5 rounded-lg border border-border bg-surface text-text-primary hover:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              title="Previous page"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+
+            <span className="px-3 py-1 font-semibold text-text-primary text-xs bg-gray-100 rounded-lg select-none">
+              Page {page} of {totalPages}
+            </span>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (page < totalPages) onPageChange?.(page + 1);
+              }}
+              disabled={page >= totalPages}
+              className="p-1.5 rounded-lg border border-border bg-surface text-text-primary hover:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              title="Next page"
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (page < totalPages) onPageChange?.(totalPages);
+              }}
+              disabled={page >= totalPages}
+              className="p-1.5 rounded-lg border border-border bg-surface text-text-primary hover:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              title="Last page"
+            >
+              <ChevronsRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
