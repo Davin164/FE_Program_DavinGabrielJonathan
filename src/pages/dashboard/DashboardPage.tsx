@@ -154,88 +154,59 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Dashboard Section: Upcoming Events List & Announcements */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left 2 Cols: Upcoming Events List */}
-        <div className="lg:col-span-2 bg-surface rounded-2xl border border-border shadow-subtle p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-base font-bold text-text-primary">Upcoming Events</h2>
-              <p className="text-xs text-text-secondary mt-0.5">
-                Check out the latest GDGoC Universitas Sriwijaya sessions
-              </p>
-            </div>
-            <Link
-              to="/events"
-              className="text-xs font-semibold text-primary hover:text-primary-hover flex items-center gap-1"
-            >
-              View all
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-
-          {isEventsLoading ? (
-            <LoadingSpinner size="md" className="py-8" />
-          ) : upcomingEvents.length === 0 ? (
-            <p className="text-xs text-text-secondary py-8 text-center">No upcoming events found</p>
-          ) : (
-            <div className="divide-y divide-border">
-              {upcomingEvents.slice(0, 5).map((evt) => {
-                const regCount = evt.registered_count ?? evt.registration_count ?? 0;
-                const isOngoing =
-                  new Date(evt.start_time) <= now && new Date(evt.end_time) >= now;
-
-                return (
-                  <div key={evt.id} className="py-3 flex items-center justify-between gap-3">
-                    <div>
-                      <Link
-                        to={`/events/${evt.id}`}
-                        className="font-semibold text-sm text-text-primary hover:text-primary transition-colors block"
-                      >
-                        {evt.title}
-                      </Link>
-                      <span className="text-xs text-text-secondary">
-                        {formatDateTime(evt.start_time)} • {evt.location || 'Online'}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-text-secondary">
-                        {regCount}/{evt.quota} spots
-                      </span>
-                      <StatusBadge status={isOngoing ? 'ongoing' : 'upcoming'} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Right Col: About GDGoC UNSRI & Guidelines */}
-        <div className="bg-surface rounded-2xl border border-border shadow-subtle p-6 flex flex-col justify-between">
+      {/* Main Dashboard Section: Upcoming Events List */}
+      <div className="bg-surface rounded-2xl border border-border shadow-subtle p-6">
+        <div className="flex items-center justify-between mb-4">
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-2.5 h-2.5 rounded-full bg-secondary" />
-              <h3 className="text-sm font-bold text-text-primary">Chapter Announcements</h3>
-            </div>
-            <p className="text-xs text-text-secondary leading-relaxed">
-              Google Developer Groups on Campus (GDGoC) Universitas Sriwijaya is a student-led
-              technology community supported by Google Developers.
+            <h2 className="text-base font-bold text-text-primary">Upcoming Events</h2>
+            <p className="text-xs text-text-secondary mt-0.5">
+              Check out the latest GDGoC Universitas Sriwijaya sessions
             </p>
-            <div className="mt-4 p-3.5 bg-gray-50 rounded-xl border border-border/70 space-y-2 text-xs">
-              <p className="font-semibold text-text-primary">Upcoming Milestones:</p>
-              <ul className="list-disc pl-4 space-y-1 text-text-secondary">
-                <li>Core Team onboarding workshop</li>
-                <li>Google Solution Challenge 2026 kick-off</li>
-                <li>Web & Cloud Division study jams</li>
-              </ul>
-            </div>
           </div>
-
-          <div className="mt-6 pt-4 border-t border-border flex items-center justify-between text-xs text-text-secondary">
-            <span>Universitas Sriwijaya</span>
-          </div>
+          <Link
+            to="/events"
+            className="text-xs font-semibold text-primary hover:text-primary-hover flex items-center gap-1"
+          >
+            View all
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
+
+        {isEventsLoading ? (
+          <LoadingSpinner size="md" className="py-8" />
+        ) : upcomingEvents.length === 0 ? (
+          <p className="text-xs text-text-secondary py-8 text-center">No upcoming events found</p>
+        ) : (
+          <div className="divide-y divide-border">
+            {upcomingEvents.slice(0, 5).map((evt) => {
+              const regCount = evt.registered_count ?? evt.registration_count ?? 0;
+              const isOngoing =
+                new Date(evt.start_time) <= now && new Date(evt.end_time) >= now;
+
+              return (
+                <div key={evt.id} className="py-3 flex items-center justify-between gap-3">
+                  <div>
+                    <Link
+                      to={`/events/${evt.id}`}
+                      className="font-semibold text-sm text-text-primary hover:text-primary transition-colors block"
+                    >
+                      {evt.title}
+                    </Link>
+                    <span className="text-xs text-text-secondary">
+                      {formatDateTime(evt.start_time)} • {evt.location || 'Online'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-text-secondary">
+                      {regCount}/{evt.quota} spots
+                    </span>
+                    <StatusBadge status={isOngoing ? 'ongoing' : 'upcoming'} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Audit Logs Section for Leaders & Chapter Transparency */}
