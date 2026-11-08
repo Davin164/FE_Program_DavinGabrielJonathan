@@ -50,10 +50,11 @@ export const useCreateEvent = () => {
 
 export const useUpdateEvent = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<Event> }) => {
-      return supabaseService.events.update(id, data);
+      return supabaseService.events.update(id, data, user?.id);
     },
     onSuccess: (updatedEvent) => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
@@ -68,10 +69,11 @@ export const useUpdateEvent = () => {
 
 export const useDeleteEvent = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string) => {
-      return supabaseService.events.delete(id);
+      return supabaseService.events.delete(id, user?.id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['events'] });

@@ -35,17 +35,14 @@ export const supabaseService = {
         throw new Error('Invalid email or password');
       }
 
-      // Verify bcrypt hash or fallback to direct comparison
+      // Verify password against the stored bcrypt hash
       let isMatch = false;
       if (user.password_hash) {
         try {
           isMatch = bcrypt.compareSync(password, user.password_hash);
         } catch {
-          isMatch = password === 'Password123!';
+          isMatch = false;
         }
-      }
-      if (!isMatch && password === 'Password123!') {
-        isMatch = true;
       }
 
       if (!isMatch) {
@@ -320,6 +317,11 @@ export const supabaseService = {
 
       if (error || !data) throw new Error(error?.message || 'Failed to create event');
 
+      await supabaseService.auditLogs.log('EVENT_CREATED', 'events', data.id, currentUserId, null, {
+        title: data.title,
+        quota: data.quota,
+      });
+
       return {
         id: data.id,
         title: data.title,
@@ -340,7 +342,7 @@ export const supabaseService = {
       };
     },
 
-    async update(id: string, payload: Partial<Event>): Promise<Event> {
+    async update(id: string, payload: Partial<Event>, actorId?: string): Promise<Event> {
       const updateData: Record<string, unknown> = {};
       if (payload.title !== undefined) updateData.title = payload.title;
       if (payload.description !== undefined) updateData.description = payload.description;
@@ -359,6 +361,13 @@ export const supabaseService = {
 
       if (error) throw new Error(error.message);
       if (!data) throw new Error('Event not found or has been deleted');
+
+      await supabaseService.auditLogs.log('EVENT_UPDATED', 'events', data.id, actorId, null, {
+        title: data.title,
+        quota: data.quota,
+        start_time: data.start_time,
+        end_time: data.end_time,
+      });
 
       return {
         id: data.id,
@@ -380,13 +389,21 @@ export const supabaseService = {
       };
     },
 
-    async delete(id: string): Promise<void> {
+    async delete(id: string, actorId?: string): Promise<void> {
+      const { data: target } = await supabase
+        .from('events')
+        .select('title, quota')
+        .eq('id', id)
+        .maybeSingle();
+
       const { error } = await supabase
         .from('events')
         .update({ is_deleted: true, updated_at: new Date().toISOString() })
         .eq('id', id);
 
       if (error) throw new Error(error.message);
+
+      await supabaseService.auditLogs.log('EVENT_DELETED', 'events', id, actorId, target, null);
     },
   },
 
@@ -475,7 +492,7 @@ export const supabaseService = {
       };
     },
 
-    async create(payload: Partial<User> & { password?: string }): Promise<User> {
+    async create(payload: Partial<User> & { password?: string }, actorId?: string): Promise<User> {
       const email = payload.email?.trim().toLowerCase();
       if (!email) throw new Error('Email is required');
 
@@ -498,6 +515,12 @@ export const supabaseService = {
 
       if (error || !u) throw new Error(error?.message || 'Failed to create member');
 
+      await supabaseService.auditLogs.log('MEMBER_CREATED', 'users', u.id, actorId, null, {
+        name: u.name,
+        email: u.email,
+        role: u.role,
+      });
+
       return {
         id: u.id,
         email: u.email,
@@ -512,7 +535,7 @@ export const supabaseService = {
       };
     },
 
-    async update(id: string, payload: Partial<User>): Promise<User> {
+    async update(id: string, payload: Partial<User>, actorId?: string): Promise<User> {
       const updateData: Record<string, unknown> = {};
       if (payload.name !== undefined) updateData.name = payload.name;
       if (payload.email !== undefined) updateData.email = payload.email.trim().toLowerCase();
@@ -521,6 +544,13 @@ export const supabaseService = {
       if (payload.nim !== undefined) updateData.nim = payload.nim || null;
       if (payload.phone !== undefined) updateData.phone = payload.phone || null;
       updateData.updated_at = new Date().toISOString();
+
+      // Snapshot the current values so the audit trail records old -> new
+      const { data: before } = await supabase
+        .from('users')
+        .select('name, email, role, division_id, nim, phone')
+        .eq('id', id)
+        .maybeSingle();
 
       const { data: u, error } = await supabase
         .from('users')
@@ -536,15 +566,28 @@ export const supabaseService = {
         );
       }
 
-      // Record audit log
-      await supabaseService.auditLogs.log(
-        updateData.role ? 'UPDATE_ROLE' : 'PROFILE_UPDATED',
-        'users',
-        u.id,
-        u.id,
-        null,
-        updateData
-      );
+      // Record only the fields that actually changed, attributed to the acting user
+      const oldValue: Record<string, unknown> = {};
+      const newValue: Record<string, unknown> = {};
+      (Object.keys(updateData) as string[]).forEach((key) => {
+        if (key === 'updated_at') return;
+        const previous = (before as Record<string, unknown> | null)?.[key] ?? null;
+        if (previous !== updateData[key]) {
+          oldValue[key] = previous;
+          newValue[key] = updateData[key];
+        }
+      });
+
+      if (Object.keys(newValue).length > 0) {
+        await supabaseService.auditLogs.log(
+          'role' in newValue ? 'UPDATE_ROLE' : 'PROFILE_UPDATED',
+          'users',
+          u.id,
+          actorId ?? u.id,
+          oldValue,
+          newValue
+        );
+      }
 
       return {
         id: u.id,
@@ -560,13 +603,21 @@ export const supabaseService = {
       };
     },
 
-    async delete(id: string): Promise<void> {
+    async delete(id: string, actorId?: string): Promise<void> {
+      const { data: target } = await supabase
+        .from('users')
+        .select('name, email, role')
+        .eq('id', id)
+        .maybeSingle();
+
       const { error } = await supabase
         .from('users')
         .update({ is_deleted: true, deleted_at: new Date().toISOString() })
         .eq('id', id);
 
       if (error) throw new Error(error.message);
+
+      await supabaseService.auditLogs.log('MEMBER_DELETED', 'users', id, actorId, target, null);
     },
 
     async getDivisions(): Promise<Division[]> {

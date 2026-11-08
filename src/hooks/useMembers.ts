@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabaseService } from '../services/supabaseService';
+import { useAuth } from './useAuth';
 import { User, MemberQueryParams } from '../types';
 import { toast } from 'sonner';
 import { getErrorMessage } from '../lib/utils';
@@ -35,10 +36,11 @@ export const useDivisions = () => {
 
 export const useCreateMember = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async (payload: Partial<User> & { password?: string }) => {
-      return supabaseService.members.create(payload);
+      return supabaseService.members.create(payload, user?.id);
     },
     onSuccess: (newUser) => {
       queryClient.invalidateQueries({ queryKey: ['members'] });
@@ -52,10 +54,11 @@ export const useCreateMember = () => {
 
 export const useUpdateMember = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<User> }) => {
-      return supabaseService.members.update(id, data);
+      return supabaseService.members.update(id, data, user?.id);
     },
     onSuccess: (updatedUser) => {
       queryClient.invalidateQueries({ queryKey: ['members'] });
@@ -70,10 +73,11 @@ export const useUpdateMember = () => {
 
 export const useDeleteMember = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string) => {
-      return supabaseService.members.delete(id);
+      return supabaseService.members.delete(id, user?.id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['members'] });

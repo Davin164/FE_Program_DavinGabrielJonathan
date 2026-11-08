@@ -209,7 +209,8 @@ export const DashboardPage: React.FC = () => {
         )}
       </div>
 
-      {/* Audit Logs Section for Leaders & Chapter Transparency */}
+      {/* Audit Logs Section — visible to executives only (Lead s.d. Core Team) */}
+      {role && role !== 'MEMBER' && (
       <div className="bg-surface rounded-2xl border border-border shadow-subtle p-6">
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-border">
           <div className="flex items-center gap-2.5">
@@ -254,16 +255,24 @@ export const DashboardPage: React.FC = () => {
               <tbody className="divide-y divide-border/60">
                 {auditLogs.map((log) => {
                   let detailText = '-';
-                  if (log.new_value) {
-                    if (log.action === 'UPDATE_ROLE' || log.action === 'ROLE_CHANGE') {
-                      detailText = `Perubahan Role: ${log.old_value?.role || 'MEMBER'} ➔ ${log.new_value?.role}`;
-                    } else if (log.action === 'MEMBER_CREATED') {
-                      detailText = `Akun dibuat: ${log.new_value?.name} (${log.new_value?.role})`;
-                    } else if (log.action === 'EVENT_CREATED') {
-                      detailText = `Event dibuat: "${log.new_value?.title}"`;
-                    } else {
-                      detailText = JSON.stringify(log.new_value);
-                    }
+                  const oldVal = log.old_value as Record<string, unknown> | null;
+                  const newVal = log.new_value as Record<string, unknown> | null;
+                  if (log.action === 'UPDATE_ROLE' || log.action === 'ROLE_CHANGE') {
+                    detailText = `Perubahan Role: ${String(oldVal?.role ?? '-')} ➔ ${String(newVal?.role ?? '-')}`;
+                  } else if (log.action === 'PROFILE_UPDATED' && newVal) {
+                    detailText = `Profil diubah: ${Object.keys(newVal).join(', ')}`;
+                  } else if (log.action === 'MEMBER_CREATED' && newVal) {
+                    detailText = `Akun dibuat: ${String(newVal.name)} (${String(newVal.role)})`;
+                  } else if (log.action === 'MEMBER_DELETED' && oldVal) {
+                    detailText = `Akun dihapus: ${String(oldVal.name)} (${String(oldVal.role)})`;
+                  } else if (log.action === 'EVENT_CREATED' && newVal) {
+                    detailText = `Event dibuat: "${String(newVal.title)}"`;
+                  } else if (log.action === 'EVENT_UPDATED' && newVal) {
+                    detailText = `Event diperbarui: "${String(newVal.title)}"`;
+                  } else if (log.action === 'EVENT_DELETED' && oldVal) {
+                    detailText = `Event dihapus: "${String(oldVal.title)}"`;
+                  } else if (newVal) {
+                    detailText = JSON.stringify(newVal);
                   }
 
                   return (
@@ -303,6 +312,7 @@ export const DashboardPage: React.FC = () => {
           </div>
         )}
       </div>
+      )}
     </div>
   );
 };
