@@ -53,7 +53,7 @@ Ada **8 role** sesuai struktur kepengurusan. Semua akun uji berpassword **`Passw
 | **TREASURER_1** | `treas1.gdgoc@gmail.com` | Eksekutif. |
 | **TREASURER_2** | `treas2.gdgoc@gmail.com` | Eksekutif. |
 | **CORE_TEAM** | `core.tech@gmail.com` / `core.ml@gmail.com` | Eksekutif tingkat divisi (Web Dev / Machine Learning): kelola event & absensi. |
-| **MEMBER** | `davingabrieljonathan@gmail.com` / `member.gdgoc@gmail.com` | Daftar/batal event, check-in & batal absen sendiri. |
+| **MEMBER** | `davin4@gmail.com` / `member.gdgoc@gmail.com` | Daftar/batal event, check-in & batal absen sendiri. |
 
 **Aturan akses**
 - Registrasi publik (`/register`) **hanya** menghasilkan role **MEMBER**.

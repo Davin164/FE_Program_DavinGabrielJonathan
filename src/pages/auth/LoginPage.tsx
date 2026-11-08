@@ -215,7 +215,7 @@ export const LoginPage: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => selectDemoAccount('davingabrieljonathan@gmail.com')}
+              onClick={() => selectDemoAccount('davin4@gmail.com')}
               className="px-2.5 py-1 text-xs font-medium rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
             >
               👤 Member (Davin)

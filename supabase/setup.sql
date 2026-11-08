@@ -178,7 +178,7 @@ INSERT INTO users (email, name, password_hash, role, division_id, nim, phone) VA
     '09021282100008', '082222222223'
   ),
   (
-    'davingabrieljonathan@gmail.com',
+    'davin4@gmail.com',
     'Davin Gabriel Jonathan',
     extensions.crypt('Password123!', extensions.gen_salt('bf', 12)),
     'MEMBER',
