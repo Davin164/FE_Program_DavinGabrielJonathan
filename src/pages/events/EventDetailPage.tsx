@@ -63,7 +63,6 @@ export const EventDetailPage: React.FC = () => {
   const isFull = regCount >= quota;
   const isPast = new Date(event.end_time) < new Date();
 
-  // Check if current user is registered
   const isRegistered =
     event.is_registered || registrations.some((r) => r.user_id === user?.id);
 

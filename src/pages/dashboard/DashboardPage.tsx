@@ -203,7 +203,6 @@ export const DashboardPage: React.FC = () => {
         )}
       </div>
 
-      {/* Audit logs hanya untuk pengurus (Lead s.d. Core Team) */}
       {role && role !== 'MEMBER' && (
       <div className="bg-surface rounded-2xl border border-border shadow-subtle p-6">
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-border">
@@ -252,7 +251,7 @@ export const DashboardPage: React.FC = () => {
                   const oldVal = log.old_value as Record<string, unknown> | null;
                   const newVal = log.new_value as Record<string, unknown> | null;
                   if (log.action === 'UPDATE_ROLE' || log.action === 'ROLE_CHANGE') {
-                    detailText = `Perubahan Role: ${String(oldVal?.role ?? '-')} ➔ ${String(newVal?.role ?? '-')}`;
+                    detailText = `Perubahan Role: ${String(oldVal?.role ?? '-')} -> ${String(newVal?.role ?? '-')}`;
                   } else if (log.action === 'PROFILE_UPDATED' && newVal) {
                     detailText = `Profil diubah: ${Object.keys(newVal).join(', ')}`;
                   } else if (log.action === 'MEMBER_CREATED' && newVal) {

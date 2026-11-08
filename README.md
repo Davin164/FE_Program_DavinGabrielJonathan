@@ -1,17 +1,15 @@
 # GDGoC UNSRI Management System — Front-End Application
 
-> **Google Developer Groups on Campus (GDGoC) Universitas Sriwijaya**
-> Sistem manajemen Core Team & anggota: React 18 + TypeScript + Vite + Tailwind CSS + TanStack Query, dengan **Supabase** sebagai Backend-as-a-Service (PostgreSQL).
+> **Google Developer Groups on Campus (GDGoC) Universitas Sriwijaya**  
+> Sistem manajemen Core Team dan anggota: React 18 + TypeScript + Vite + Tailwind CSS + TanStack Query, dengan Supabase sebagai Backend-as-a-Service (PostgreSQL).
 
-| | |
+| Informasi | Keterangan |
 | :-- | :-- |
-| **Live (Vercel)** | https://fe-program-davin-gabriel-jonathan.vercel.app |
-| **Repository** | https://github.com/Davin164/FE_Program_DavinGabrielJonathan |
-| **BaaS** | Supabase (project `your-project-id`, PostgreSQL) |
+| **Live Deployment (Vercel)** | https://fe-program-davin-gabriel-jonathan.vercel.app |
+| **Repository GitHub** | https://github.com/Davin164/FE_Program_DavinGabrielJonathan |
+| **BaaS** | Supabase (PostgreSQL) |
 
----
-
-## 🎨 GDGoC UNSRI Brand Palette
+## GDGoC UNSRI Brand Palette
 
 | Color Role | Hex Code | Google Brand Color |
 | :--- | :--- | :--- |
@@ -24,68 +22,60 @@
 | **Text Primary** | `#202124` | Dark Charcoal |
 | **Text Secondary** | `#5F6368` | Slate Muted Gray |
 
----
-
-## 🚀 Tech Stack
+## Tech Stack
 
 - **Framework**: React 18 + TypeScript 5 via Vite 5
 - **Styling**: Tailwind CSS v3 (palet resmi GDGoC di `tailwind.config.ts`)
 - **Routing**: React Router DOM v6 (nested layout, `ProtectedRoute`, `RoleGuard`)
 - **Server State**: TanStack Query v5 (cache, invalidasi otomatis setelah mutasi)
 - **Form & Validasi**: React Hook Form + Zod
-- **BaaS**: `@supabase/supabase-js` — query langsung ke PostgreSQL Supabase lewat `src/services/supabaseService.ts` (satu-satunya lapisan akses data)
-- **Auth**: email + password (hash **bcrypt** via `bcryptjs`) dan **Google OAuth** (Supabase Auth)
-- **UI**: Lucide React, Sonner (toast)
-- **Deployment**: Vercel (`vercel.json` berisi SPA rewrite)
+- **BaaS**: `@supabase/supabase-js` — query ke PostgreSQL Supabase melalui `src/services/supabaseService.ts`
+- **Auth**: email + password (hash bcrypt) dan Google OAuth (Supabase Auth)
+- **UI**: Lucide React, Sonner (toast notification)
+- **Deployment**: Vercel (`vercel.json` konfigurasi SPA rewrite)
 
----
+## Role (RBAC) dan Akun Pengujian
 
-## 🔐 Role (RBAC) & Akun Pengujian
-
-Ada **8 role** sesuai struktur kepengurusan. Semua akun uji berpassword **`Password123!`**.
+Sistem mendukung 8 role kepengurusan. Seluruh akun pengujian menggunakan password `Password123!`.
 
 | Role | Email | Wewenang |
 | :--- | :--- | :--- |
-| **LEAD** | `lead.gdgoc@gmail.com` | Semua akses. **Satu-satunya** yang bisa menambah akun (Co-Lead s.d. Member), mengubah role, menghapus anggota. |
-| **CO_LEAD** | `colead.gdgoc@gmail.com` | Eksekutif: tambah/ubah/hapus event, pantau & batalkan absensi, lihat Audit Log. |
-| **SECRETARY_1** | `sec1.gdgoc@gmail.com` | Eksekutif (hak sama dengan Co-Lead pada event/absensi). |
+| **LEAD** | `lead.gdgoc@gmail.com` | Akses penuh. Menambah akun (Co-Lead hingga Member), mengubah role, menghapus anggota. |
+| **CO_LEAD** | `colead.gdgoc@gmail.com` | Eksekutif: membuat, mengubah, menghapus event, memantau absensi, melihat Audit Log. |
+| **SECRETARY_1** | `sec1.gdgoc@gmail.com` | Eksekutif. |
 | **SECRETARY_2** | `sec2.gdgoc@gmail.com` | Eksekutif. |
 | **TREASURER_1** | `treas1.gdgoc@gmail.com` | Eksekutif. |
 | **TREASURER_2** | `treas2.gdgoc@gmail.com` | Eksekutif. |
-| **CORE_TEAM** | `core.tech@gmail.com` / `core.ml@gmail.com` | Eksekutif tingkat divisi (Web Dev / Machine Learning): kelola event & absensi. |
-| **MEMBER** | `davin4@gmail.com` / `member.gdgoc@gmail.com` | Daftar/batal event, check-in & batal absen sendiri. |
+| **CORE_TEAM** | `core.tech@gmail.com` / `core.ml@gmail.com` | Eksekutif tingkat divisi: kelola event dan absensi. |
+| **MEMBER** | `davin4@gmail.com` / `member.gdgoc@gmail.com` | Daftar/batal event, check-in dan batal absen mandiri. |
 
-**Aturan akses**
-- Registrasi publik (`/register`) **hanya** menghasilkan role **MEMBER**.
-- Tambah/ubah role/hapus anggota: **LEAD saja** (dijaga `RoleGuard` + disembunyikan di UI).
-- Buat/ubah/hapus event & kelola absensi: semua role **selain MEMBER** (Lead s.d. Core Team).
-- Panel **Audit Log** di Dashboard: hanya terlihat oleh role selain MEMBER.
-- Halaman login menyediakan chip **"Pilihan Akun Uji Coba"** — klik untuk mengisi email & password otomatis.
+### Aturan Akses
+- Registrasi publik (`/register`) hanya menghasilkan role `MEMBER`.
+- Tambah anggota, ubah role, dan hapus anggota dibatasi khusus role `LEAD` (dilindungi `RoleGuard` dan tombol disembunyikan di UI).
+- Buat, ubah, dan hapus event dapat diakses oleh Lead dan seluruh Core Team eksekutif.
+- Panel Audit Log di Dashboard hanya ditampilkan bagi pengurus.
+- Halaman login menyediakan tombol pilihan akun pengujian untuk mengisi email dan password secara otomatis.
 
-**12 divisi**: Machine Learning, Cyber Security, Game Development, Mobile Development, Web Development, UI/UX, Project Management, Human Resource, Public Relation, Creative Design, Videography, Copywriting.
+12 divisi GDGoC UNSRI: Machine Learning, Cyber Security, Game Development, Mobile Development, Web Development, UI/UX, Project Management, Human Resource, Public Relation, Creative Design, Videography, Copywriting.
 
----
+## Fitur dan Aturan Bisnis
 
-## ✅ Fitur & Aturan Bisnis
-
-| Area | Perilaku |
+| Area | Perilaku Sistem |
 | :--- | :--- |
-| **Anggota** | Direktori dengan search (debounced), filter role & divisi, sorting server-side, pagination, **soft delete** (`is_deleted`). |
-| **Event** | CRUD + **kuota**. Pendaftaran ganda dicegah constraint `UNIQUE(user_id, event_id)`. Kuota penuh ditolak. |
-| **Absensi** | Tombol check-in **dinonaktifkan sebelum event dimulai** dan setelah selesai; aktif hanya saat jadwal berlangsung. Satu check-in per anggota per event (`UNIQUE`). Ada **Batalkan Absen** (oleh pemilik; pengurus bisa membatalkan peserta lain). |
-| **Audit Log** | Mencatat siapa (aktor), apa, nilai lama → baru: `UPDATE_ROLE`, `PROFILE_UPDATED`, `MEMBER_CREATED`, `MEMBER_DELETED`, `EVENT_CREATED`, `EVENT_UPDATED`, `EVENT_DELETED`. |
-| **Dashboard** | Total Members, Completed Events, Upcoming Events, daftar event mendatang, dan Audit Log. |
+| **Anggota** | Direktori dengan pencarian real-time, filter role & divisi, sorting server-side, pagination, serta soft delete (`is_deleted`). |
+| **Event** | Manajemen event dan kuota. Pendaftaran ganda dicegah constraint `UNIQUE(user_id, event_id)`. Kuota penuh ditolak. |
+| **Absensi** | Tombol check-in hanya aktif saat jadwal event berlangsung (`start_time <= now <= end_time`) bagi peserta terdaftar. Satu check-in per anggota per event (`UNIQUE`). Tersedia aksi pembatalan absensi. |
+| **Audit Log** | Mencatat aktor, aksi, data lama dan data baru untuk setiap mutasi sensitif (`UPDATE_ROLE`, `PROFILE_UPDATED`, `MEMBER_CREATED`, `MEMBER_DELETED`, `EVENT_CREATED`, `EVENT_UPDATED`, `EVENT_DELETED`). |
+| **Dashboard** | Total Members, Completed Events, Upcoming Events, daftar event mendatang, dan panel Audit Log. |
 
----
-
-## 📁 Struktur Proyek
+## Struktur Proyek
 
 ```
 FE_Program_DavinGabrielJonathan/
 ├── public/LogoGDG.webp                  # Logo resmi GDGoC UNSRI
 ├── supabase/
-│   ├── setup.sql                        # Skema + seed (⚠ menghapus & membuat ulang tabel)
-│   └── hardening.sql                    # Aturan DB aman di-run ulang: kuota atomik & jendela absensi
+│   ├── setup.sql                        # Skema + seed awal
+│   └── hardening.sql                    # Aturan DB: kuota atomik & jendela absensi
 ├── src/
 │   ├── components/
 │   │   ├── common/                      # DataTable, ConfirmDialog, EmptyState, ErrorBoundary, LoadingSpinner,
@@ -94,75 +84,64 @@ FE_Program_DavinGabrielJonathan/
 │   │   └── layout/                      # AppLayout, Navbar, Sidebar
 │   ├── contexts/AuthContext.tsx         # Sesi login, Google OAuth listener
 │   ├── hooks/                           # useAuth, useEvents, useMembers, useRegistrations, useAttendances, useAuditLogs
-│   ├── lib/                             # supabase.ts (client), utils.ts
-│   ├── services/supabaseService.ts      # Seluruh akses data (auth, events, members, registrations, attendances, audit)
+│   ├── lib/                             # supabase.ts, utils.ts
+│   ├── services/supabaseService.ts      # Lapisan akses data terpusat
 │   ├── pages/                           # auth, dashboard, members, events, attendance, profile
 │   ├── constants/index.ts               # Role, label, style badge
 │   ├── types/index.ts                   # Tipe TypeScript
-│   ├── App.tsx                          # Router + guard
+│   ├── App.tsx                          # Router + route guards
 │   └── main.tsx
 ├── .env.example · vercel.json · github.txt · package.json · README.md
 ```
 
-**13 rute**: `/login`, `/register`, `/dashboard`, `/members`, `/members/new`, `/members/:id`, `/members/:id/edit`, `/events`, `/events/new`, `/events/:id`, `/events/:id/edit`, `/attendance`, `/profile`.
+Halaman rute aplikasi (13 rute): `/login`, `/register`, `/dashboard`, `/members`, `/members/new`, `/members/:id`, `/members/:id/edit`, `/events`, `/events/new`, `/events/:id`, `/events/:id/edit`, `/attendance`, `/profile`.
 
----
+## Menjalankan Secara Lokal
 
-## ⚙️ Menjalankan Secara Lokal
-
-Prasyarat: **Node.js ≥ 18**.
+Prasyarat: Node.js v18 atau lebih baru.
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173
-npm run build      # build produksi + type-check
+npm run dev
+```
+Aplikasi berjalan pada `http://localhost:5173`.
+
+Build produksi dan type-check:
+```bash
+npm run build
 ```
 
-### Environment (`.env`)
-File `.env` **sudah disertakan di dalam ZIP submission** dan terhubung ke project Supabase yang aktif, jadi aplikasi langsung bisa dipakai tanpa setup layanan eksternal. Untuk membuat sendiri, salin `.env.example`:
-
+### Konfigurasi Environment (`.env`)
+File `.env` sudah disertakan di dalam folder proyek dan terhubung ke project Supabase aktif.
 ```env
 VITE_SUPABASE_URL=https://your-project-id.supabase.co
-VITE_SUPABASE_ANON_KEY=<publishable key>
+VITE_SUPABASE_ANON_KEY=your-supabase-publishable-key
 ```
 
-> `.env` di-ignore oleh Git (tidak ada secret di riwayat commit). `src/lib/supabase.ts` memakai nilai ini; jika kosong, jatuh ke project Supabase publik yang sama.
+## Setup Database Supabase (Project Baru)
 
----
+1. Buka Supabase SQL Editor.
+2. Jalankan `supabase/setup.sql` untuk membuat tabel, relasi, dan seed data.
+3. Jalankan `supabase/hardening.sql` untuk memastikan trigger database aktif:
+   - `trg_enforce_event_quota` — `SELECT ... FOR UPDATE` pada baris event agar pendaftar konkuren tidak melebihi kuota.
+   - `trg_enforce_attendance_window` — validasi waktu kehadiran `start_time <= now <= end_time`.
 
-## 🗄️ Setup Database Supabase (hanya bila membuat project baru)
+## Deploy ke Vercel
 
-1. Buka **Supabase → SQL Editor**.
-2. Jalankan `supabase/setup.sql` — membuat tabel, seed akun/divisi/event, RLS, **dan** trigger aturan bisnis.
-   > ⚠️ Skrip ini memiliki `DROP TABLE`. **Jangan** dijalankan di database yang sudah berisi data.
-3. Untuk database yang **sudah berjalan**, cukup jalankan `supabase/hardening.sql` (aman diulang, tidak menghapus data). Isinya:
-   - `trg_enforce_event_quota` — `SELECT … FOR UPDATE` pada baris event sehingga dua pendaftar yang berebut kursi terakhir tidak bisa sama-sama lolos.
-   - `trg_enforce_attendance_window` — absensi hanya diterima saat `start_time ≤ now ≤ end_time`.
-4. (Opsional, untuk Google Sign-In) *Authentication → Providers → Google*, lalu tambahkan URL Vercel ke *Redirect URLs*.
+1. Import repository GitHub di Vercel (Preset: Vite).
+2. Konfigurasikan Environment Variables: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.
+3. Deploy. File `vercel.json` menangani routing client-side SPA.
 
----
+## Skenario Pengujian
 
-## 🌐 Deploy ke Vercel
+1. Login Lead -> buka Members -> ubah role anggota -> buka Dashboard: Audit Log menampilkan Lead sebagai aktor dan perubahan role.
+2. Login Member -> Attendance -> event mendatang tombol disabled; event aktif tombol aktif untuk check-in dan pembatalan absen.
+3. Daftarkan akun ke event berkuota penuh -> sistem menolak pendaftaran dengan notifikasi yang jelas.
+4. Registrasi akun baru di `/register` -> role otomatis ditetapkan sebagai Member.
 
-1. Import repository GitHub (Framework Preset: **Vite**).
-2. Tambahkan Environment Variables: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.
-3. Deploy. `vercel.json` menangani refresh halaman pada rute SPA.
+## Batasan Saat Ini dan Rencana Perbaikan
 
----
+- **Otorisasi berlapis di sisi klien dan constraint database:** Penegakan aturan kuota dan jadwal absensi sudah berjalan di level trigger database PostgreSQL. Otorisasi role saat ini diverifikasi pada layer service aplikasi.
+- **Rencana perbaikan:** Migrasi menyeluruh ke Supabase Auth Native Token sehingga kebijakan Row Level Security (RLS) PostgreSQL dapat mengevaluasi context `auth.uid()` dan klaim JWT langsung di level database engine.
 
-## 🧪 Skenario Uji Cepat
-
-1. Login **Lead** → buka *Members* → ubah role seorang member → buka *Dashboard*: Audit Log menampilkan **Lead** sebagai aktor dan `MEMBER ➔ CORE_TEAM`.
-2. Login **Member (Davin)** → *Attendance* → pilih event mendatang: tombol **disabled**. Pilih event yang sedang berlangsung: tombol aktif → check-in → **Batalkan Absen**.
-3. Daftarkan dua akun ke event berkuota 1 → akun kedua ditolak (*quota is full*).
-4. Registrasi akun baru di `/register` → role otomatis **Member**.
-
----
-
-## ⚠️ Batasan yang Diketahui & Rencana Perbaikan
-
-- **Otorisasi masih berlapis di sisi klien + constraint database.** Tabel memakai kebijakan RLS terbuka (`USING (true)`) karena login memakai tabel `users` kustom, bukan Supabase Auth, sehingga database tidak dapat membedakan pemanggil. Aturan *kuota* dan *jendela absensi* sudah dipaksa di database (trigger), namun pembatasan **role** (misal hanya Lead boleh mengubah role) belum ditegakkan di database.
-- **Rencana**: migrasi ke **Supabase Auth** (JWT nyata) + RLS berbasis `auth.uid()` dan role, serta memindahkan operasi sensitif (ubah role, tambah akun) ke fungsi `SECURITY DEFINER`/Edge Function. Untuk produksi, hash password tidak boleh dapat dibaca klien.
-
----
-**Developed for GDGoC UNSRI Core Team Selection — Davin Gabriel Jonathan**
+Davin Gabriel Jonathan — GDGoC UNSRI Core Team Selection

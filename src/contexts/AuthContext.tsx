@@ -33,7 +33,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (cachedUser) {
       try {
         const parsed = JSON.parse(cachedUser);
-        // Otomatis hapus sesi lama (@gdgoc.unsri.ac.id) agar tidak terjadi konflik ID di database
         if (parsed?.email?.includes('@gdgoc.unsri.ac.id')) {
           localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
           localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
@@ -94,7 +93,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     fetchCurrentUser();
 
-    // Listener login OAuth Google
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session?.user?.email) {
         try {
@@ -119,7 +117,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               updated_at: existingUser.updated_at,
             };
           } else {
-            // User Google baru otomatis terdaftar sebagai MEMBER
             const { data: newUser } = await supabase
               .from('users')
               .insert({

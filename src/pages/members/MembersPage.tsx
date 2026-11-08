@@ -55,7 +55,6 @@ export const MembersPage: React.FC = () => {
       await deleteMemberMutation.mutateAsync(memberToDelete.id);
       setMemberToDelete(null);
     } catch {
-      // handled by mutation onError
     }
   };
 

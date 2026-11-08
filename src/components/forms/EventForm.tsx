@@ -35,7 +35,6 @@ interface EventFormProps {
   isEdit?: boolean;
 }
 
-// Convert ISO string to HTML datetime-local format "YYYY-MM-DDTHH:mm"
 const toDateTimeLocal = (isoString?: string) => {
   if (!isoString) return '';
   try {

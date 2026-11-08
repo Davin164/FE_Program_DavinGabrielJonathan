@@ -26,7 +26,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 sm:px-6 bg-surface/90 backdrop-blur-md border-b border-border">
-      {/* Left side: hamburger button + brand tagline */}
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -43,7 +42,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
         </div>
       </div>
 
-      {/* Right side: user profile dropdown */}
       <div className="flex items-center gap-3">
         <div className="relative" ref={dropdownRef}>
           <button
@@ -64,7 +62,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
             </div>
           </button>
 
-          {/* Dropdown Menu */}
           {dropdownOpen && (
             <div className="absolute right-0 mt-2 w-56 bg-surface rounded-2xl shadow-card border border-border py-2 animate-fade-in z-50">
               <div className="px-4 py-2 border-b border-border">

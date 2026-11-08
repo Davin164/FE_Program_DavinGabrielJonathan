@@ -14,10 +14,8 @@ import {
 } from '../types';
 
 export const supabaseService = {
-  // Auth
   auth: {
     async login(email: string, password: string): Promise<{ user: User; token: string }> {
-      // Find user by email
       const { data: user, error } = await supabase
         .from('users')
         .select('*, division:divisions(id, name)')
@@ -33,7 +31,6 @@ export const supabaseService = {
         throw new Error('Invalid email or password');
       }
 
-      // Verify password against the stored bcrypt hash
       let isMatch = false;
       if (user.password_hash) {
         try {
@@ -60,7 +57,6 @@ export const supabaseService = {
         updated_at: user.updated_at,
       };
 
-      // Synthetic JWT-like token for BaaS session
       const token = `sb_baas_token_${user.id}_${Date.now()}`;
 
       return { user: formattedUser, token };
@@ -76,7 +72,6 @@ export const supabaseService = {
     }): Promise<{ user: User; token: string }> {
       const email = payload.email.trim().toLowerCase();
 
-      // Check if user already exists
       const { data: existing } = await supabase
         .from('users')
         .select('id')
@@ -152,7 +147,6 @@ export const supabaseService = {
     },
   },
 
-  // Events
   events: {
     async getAll(params: EventQueryParams = {}, currentUserId?: string): Promise<ApiResponse<Event[]>> {
       let query = supabase
@@ -181,7 +175,6 @@ export const supabaseService = {
       const { data, count, error } = await query;
       if (error) throw new Error(error.message);
 
-      // Fetch registration counts & user registration status
       const eventIds = (data || []).map((e) => e.id);
       let regCounts: Record<string, number> = {};
       let userRegisteredSet = new Set<string>();
@@ -403,7 +396,6 @@ export const supabaseService = {
     },
   },
 
-  // Members
   members: {
     async getAll(params: MemberQueryParams = {}): Promise<ApiResponse<User[]>> {
       let query = supabase
@@ -540,7 +532,6 @@ export const supabaseService = {
       if (payload.phone !== undefined) updateData.phone = payload.phone || null;
       updateData.updated_at = new Date().toISOString();
 
-      // Snapshot the current values so the audit trail records old -> new
       const { data: before } = await supabase
         .from('users')
         .select('name, email, role, division_id, nim, phone')
@@ -561,7 +552,6 @@ export const supabaseService = {
         );
       }
 
-      // Record only the fields that actually changed, attributed to the acting user
       const oldValue: Record<string, unknown> = {};
       const newValue: Record<string, unknown> = {};
       (Object.keys(updateData) as string[]).forEach((key) => {
@@ -622,7 +612,6 @@ export const supabaseService = {
     },
   },
 
-  // Registrations
   registrations: {
     async getByEvent(eventId: string): Promise<Registration[]> {
       const { data, error } = await supabase
@@ -648,7 +637,6 @@ export const supabaseService = {
     },
 
     async register(eventId: string, userId: string): Promise<Registration> {
-      // Pastikan event ada dan aktif
       const { data: event, error: eventErr } = await supabase
         .from('events')
         .select('id, title, quota, is_deleted')
@@ -659,7 +647,6 @@ export const supabaseService = {
         throw new Error('Event not found or has been canceled');
       }
 
-      // Cek apakah sudah terdaftar
       const { data: existingReg } = await supabase
         .from('registrations')
         .select('id')
@@ -671,7 +658,6 @@ export const supabaseService = {
         throw new Error('You are already registered for this event');
       }
 
-      // Cek ketersediaan kuota
       const { count } = await supabase
         .from('registrations')
         .select('*', { count: 'exact', head: true })
@@ -716,7 +702,6 @@ export const supabaseService = {
     },
   },
 
-  // Attendances
   attendances: {
     async getByEvent(eventId: string): Promise<Attendance[]> {
       const { data, error } = await supabase
@@ -740,7 +725,6 @@ export const supabaseService = {
     },
 
     async checkIn(eventId: string, userId: string): Promise<Attendance> {
-      // Pastikan user valid di database
       const { data: userRecord, error: userErr } = await supabase
         .from('users')
         .select('id, name, email')
@@ -753,7 +737,6 @@ export const supabaseService = {
         );
       }
 
-      // Pastikan event valid dan aktif
       const { data: event, error: eventErr } = await supabase
         .from('events')
         .select('id, title, start_time, end_time, is_deleted')
@@ -764,7 +747,6 @@ export const supabaseService = {
         throw new Error('Event not found or has been removed');
       }
 
-      // Absensi hanya dibuka saat jadwal pelaksanaan
       const nowMs = Date.now();
       const startMs = new Date(event.start_time).getTime();
       const endMs = new Date(event.end_time).getTime();
@@ -778,7 +760,6 @@ export const supabaseService = {
         throw new Error('Sesi absensi untuk event ini telah berakhir.');
       }
 
-      // Cek apakah sudah pernah absen
       const { data: existing } = await supabase
         .from('attendances')
         .select('id')
@@ -790,7 +771,6 @@ export const supabaseService = {
         throw new Error('You have already checked in to this event');
       }
 
-      // Catat absensi
       const { data: newAtt, error: insertErr } = await supabase
         .from('attendances')
         .insert({
@@ -854,7 +834,6 @@ export const supabaseService = {
     },
   },
 
-  // Audit Logs
   auditLogs: {
     async getAll(limit = 10): Promise<AuditLog[]> {
       const { data, error } = await supabase

@@ -8,10 +8,8 @@ export const AppLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Sidebar for Mobile & Desktop */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Main Content Area */}
       <div className="lg:pl-64 flex flex-col min-h-screen">
         <Navbar onToggleSidebar={() => setSidebarOpen((prev) => !prev)} />
 

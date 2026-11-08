@@ -15,7 +15,6 @@ export const EventFormPage: React.FC = () => {
   const updateEventMutation = useUpdateEvent();
 
   const handleSubmit = async (formData: EventFormData) => {
-    // Convert local datetime input back to ISO string
     const startIso = new Date(formData.start_time).toISOString();
     const endIso = new Date(formData.end_time).toISOString();
 

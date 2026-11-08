@@ -35,12 +35,10 @@ export const AttendancePage: React.FC = () => {
   const { data: eventsData, isLoading: isEventsLoading } = useEvents();
   const events = eventsData?.data || [];
 
-  // Filter hanya event yang sudah didaftari oleh user
   const registeredEvents = React.useMemo(() => {
     return events.filter((e) => e.is_registered);
   }, [events]);
 
-  // Default: hanya tampilkan event yang user sudah daftar. Admin dapat toggle mode jika ingin monitor semua.
   const displayEvents = isPrivileged && showAllForAdmin ? events : registeredEvents;
 
   const currentEvent =
@@ -54,7 +52,6 @@ export const AttendancePage: React.FC = () => {
   const checkInMutation = useCheckIn();
   const cancelAttendanceMutation = useCancelAttendance();
 
-  // Status waktu pelaksanaan event
   const eventStatus = React.useMemo<'upcoming' | 'ongoing' | 'past'>(() => {
     if (!currentEvent) return 'upcoming';
     const now = Date.now();

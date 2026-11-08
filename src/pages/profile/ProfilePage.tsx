@@ -42,7 +42,6 @@ export const ProfilePage: React.FC = () => {
         ]}
       />
 
-      {/* Account Overview Header */}
       <div className="bg-surface rounded-2xl border border-border p-6 shadow-subtle flex flex-col sm:flex-row items-center gap-6">
         <div className="w-20 h-20 rounded-full bg-primary-light text-primary font-bold text-2xl flex items-center justify-center shadow-subtle shrink-0">
           {user.name.charAt(0).toUpperCase()}
@@ -59,7 +58,6 @@ export const ProfilePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Profile Form */}
       <ProfileForm
         user={user}
         onSubmit={handleSubmit}

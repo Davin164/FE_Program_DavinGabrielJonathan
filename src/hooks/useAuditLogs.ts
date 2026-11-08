@@ -8,7 +8,7 @@ export const useAuditLogs = (limit = 10) => {
     queryFn: async (): Promise<AuditLog[]> => {
       return supabaseService.auditLogs.getAll(limit);
     },
-    refetchInterval: 15000, // refresh every 15s
+    refetchInterval: 15000,
   });
 };
 
