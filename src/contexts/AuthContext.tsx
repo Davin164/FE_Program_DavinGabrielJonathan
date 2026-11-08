@@ -32,7 +32,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const cachedUser = localStorage.getItem(STORAGE_KEYS.USER);
     if (cachedUser) {
       try {
-        return JSON.parse(cachedUser);
+        const parsed = JSON.parse(cachedUser);
+        // Otomatis hapus sesi lama (@gdgoc.unsri.ac.id) agar tidak terjadi konflik ID di database
+        if (parsed?.email?.includes('@gdgoc.unsri.ac.id')) {
+          localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+          localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+          localStorage.removeItem(STORAGE_KEYS.USER);
+          return null;
+        }
+        return parsed;
       } catch {
         return null;
       }

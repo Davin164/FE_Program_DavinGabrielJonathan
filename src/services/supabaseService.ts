@@ -355,9 +355,10 @@ export const supabaseService = {
         .update(updateData)
         .eq('id', id)
         .select('*, creator:users!created_by(id, name, email)')
-        .single();
+        .maybeSingle();
 
-      if (error || !data) throw new Error(error?.message || 'Failed to update event');
+      if (error) throw new Error(error.message);
+      if (!data) throw new Error('Event not found or has been deleted');
 
       return {
         id: data.id,
@@ -526,9 +527,24 @@ export const supabaseService = {
         .update(updateData)
         .eq('id', id)
         .select('*, division:divisions(id, name)')
-        .single();
+        .maybeSingle();
 
-      if (error || !u) throw new Error(error?.message || 'Failed to update member');
+      if (error) throw new Error(error.message);
+      if (!u) {
+        throw new Error(
+          'Profil akun tidak ditemukan di database (ID tidak sinkron karena database baru saja di-reset). Silakan Sign Out lalu Sign In kembali.'
+        );
+      }
+
+      // Record audit log
+      await supabaseService.auditLogs.log(
+        updateData.role ? 'UPDATE_ROLE' : 'PROFILE_UPDATED',
+        'users',
+        u.id,
+        u.id,
+        null,
+        updateData
+      );
 
       return {
         id: u.id,

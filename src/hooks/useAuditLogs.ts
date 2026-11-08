@@ -11,3 +11,4 @@ export const useAuditLogs = (limit = 10) => {
     refetchInterval: 15000, // refresh every 15s
   });
 };
+
