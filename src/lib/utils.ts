@@ -1,7 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { format, parseISO, isValid } from 'date-fns';
-import { AxiosError } from 'axios';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -48,17 +47,6 @@ export function getInitials(name?: string | null): string {
 }
 
 export function getErrorMessage(error: unknown): string {
-  if (error instanceof AxiosError) {
-    if (error.response?.data?.message) {
-      return String(error.response.data.message);
-    }
-    if (typeof error.response?.data?.error === 'string') {
-      return error.response.data.error;
-    }
-    if (error.message) {
-      return error.message;
-    }
-  }
   if (error instanceof Error) {
     return error.message;
   }
