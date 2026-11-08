@@ -89,7 +89,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
             type="email"
             {...register('email')}
             disabled={isEdit}
-            placeholder="e.g. member@unsri.ac.id"
+            placeholder="e.g. member.gdgoc@gmail.com"
             className={`w-full px-3.5 py-2.5 text-sm border border-border rounded-xl shadow-subtle ${
               isEdit
                 ? 'bg-gray-50 text-text-secondary cursor-not-allowed'
