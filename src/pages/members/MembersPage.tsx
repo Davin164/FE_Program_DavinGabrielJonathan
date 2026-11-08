@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useMembers, useDivisions, useDeleteMember } from '../../hooks/useMembers';
 import { useAuth } from '../../hooks/useAuth';
@@ -34,6 +34,11 @@ export const MembersPage: React.FC = () => {
   });
 
   const deleteMemberMutation = useDeleteMember();
+
+  const handleSearch = useCallback((val: string) => {
+    setSearch(val);
+    setPage(1);
+  }, []);
 
   const handleSort = (columnKey: string) => {
     if (sortBy === columnKey) {
@@ -165,10 +170,7 @@ export const MembersPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 bg-surface rounded-2xl border border-border shadow-subtle">
         <SearchInput
           value={search}
-          onChange={(val) => {
-            setSearch(val);
-            setPage(1);
-          }}
+          onChange={handleSearch}
           placeholder="Search by name, email, or NIM..."
           className="max-w-md"
         />

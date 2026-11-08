@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { supabaseService } from '../services/supabaseService';
 import { useAuth } from './useAuth';
 import { User, MemberQueryParams } from '../types';
@@ -11,6 +11,7 @@ export const useMembers = (params: MemberQueryParams = {}) => {
     queryFn: async () => {
       return supabaseService.members.getAll(params);
     },
+    placeholderData: keepPreviousData,
   });
 };
 

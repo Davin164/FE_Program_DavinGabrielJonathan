@@ -428,7 +428,8 @@ export const supabaseService = {
       const from = (page - 1) * limit;
       const to = from + limit - 1;
 
-      const sortField = params.sort || 'created_at';
+      const allowedSortColumns = ['name', 'email', 'role', 'nim', 'created_at'];
+      const sortField = params.sort && allowedSortColumns.includes(params.sort) ? params.sort : 'created_at';
       const isAsc = params.order === 'asc';
 
       query = query.order(sortField, { ascending: isAsc }).range(from, to);

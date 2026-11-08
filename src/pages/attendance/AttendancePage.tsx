@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useEvents } from '../../hooks/useEvents';
 import {
@@ -29,12 +30,21 @@ export const AttendancePage: React.FC = () => {
   const isPrivileged = Boolean(role && role !== 'MEMBER');
 
   const [selectedEventId, setSelectedEventId] = useState<string>('');
+  const [showAllForAdmin, setShowAllForAdmin] = useState<boolean>(false);
 
   const { data: eventsData, isLoading: isEventsLoading } = useEvents();
   const events = eventsData?.data || [];
 
+  // Filter hanya event yang sudah didaftari oleh user
+  const registeredEvents = React.useMemo(() => {
+    return events.filter((e) => e.is_registered);
+  }, [events]);
+
+  // Default: hanya tampilkan event yang user sudah daftar. Admin dapat toggle mode jika ingin monitor semua.
+  const displayEvents = isPrivileged && showAllForAdmin ? events : registeredEvents;
+
   const currentEvent =
-    events.find((e) => e.id === selectedEventId) || (events.length > 0 ? events[0] : null);
+    displayEvents.find((e) => e.id === selectedEventId) || (displayEvents.length > 0 ? displayEvents[0] : null);
 
   const activeEventId = currentEvent?.id;
 
@@ -95,24 +105,59 @@ export const AttendancePage: React.FC = () => {
 
         {isEventsLoading ? (
           <LoadingSpinner size="sm" />
-        ) : events.length === 0 ? (
-          <span className="text-xs text-text-secondary">No events available</span>
+        ) : displayEvents.length === 0 ? (
+          <span className="text-xs text-text-secondary">Tidak ada event terdaftar</span>
         ) : (
-          <select
-            value={activeEventId || ''}
-            onChange={(e) => setSelectedEventId(e.target.value)}
-            className="w-full sm:w-auto min-w-[280px] px-3.5 py-2 text-sm bg-surface border border-border rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-subtle"
-          >
-            {events.map((evt) => (
-              <option key={evt.id} value={evt.id}>
-                {evt.title} ({formatDate(evt.start_time)})
-              </option>
-            ))}
-          </select>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
+            {isPrivileged && (
+              <button
+                type="button"
+                onClick={() => setShowAllForAdmin(!showAllForAdmin)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                  showAllForAdmin
+                    ? 'bg-primary/10 border-primary text-primary'
+                    : 'bg-surface border-border text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                {showAllForAdmin ? 'Mode: Semua Event (Monitor)' : 'Mode: Event Terdaftar'}
+              </button>
+            )}
+
+            <select
+              value={activeEventId || ''}
+              onChange={(e) => setSelectedEventId(e.target.value)}
+              className="w-full sm:w-auto min-w-[280px] px-3.5 py-2 text-sm bg-surface border border-border rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-subtle"
+            >
+              {displayEvents.map((evt) => (
+                <option key={evt.id} value={evt.id}>
+                  {evt.title} ({formatDate(evt.start_time)}) {!evt.is_registered ? '(Belum Daftar)' : '(Terdaftar)'}
+                </option>
+              ))}
+            </select>
+          </div>
         )}
       </div>
 
-      {currentEvent && (
+      {!currentEvent ? (
+        <div className="p-10 bg-surface rounded-2xl border border-border shadow-subtle text-center space-y-4">
+          <div className="w-14 h-14 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto">
+            <Calendar className="w-7 h-7" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-text-primary">Belum Ada Event yang Anda Daftari</h3>
+            <p className="text-xs text-text-secondary mt-1 max-w-md mx-auto leading-relaxed">
+              Sesuai ketentuan, Anda hanya dapat melakukan absensi pada kegiatan yang telah Anda daftari sebelumnya.
+            </p>
+          </div>
+          <Link
+            to="/events"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white text-xs font-semibold hover:bg-primary-hover shadow-subtle transition-colors"
+          >
+            <Calendar className="w-4 h-4" />
+            Jelajahi & Daftar Event
+          </Link>
+        </div>
+      ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1 bg-surface rounded-2xl border border-border p-6 shadow-subtle flex flex-col justify-between">
             <div>
@@ -132,7 +177,27 @@ export const AttendancePage: React.FC = () => {
                   : 'Kegiatan ini telah selesai. Sesi absensi telah ditutup.'}
               </p>
 
-              {myCurrentCheckIn ? (
+              {!currentEvent.is_registered ? (
+                <div className="space-y-3">
+                  <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-800 flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold">Anda Belum Terdaftar</p>
+                      <p className="text-amber-700 mt-0.5 leading-relaxed">
+                        Sesuai ketentuan GDGoC, absensi hanya diperbolehkan untuk peserta yang sudah terdaftar pada kegiatan ini.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    disabled
+                    className="w-full py-3.5 px-4 rounded-xl text-sm font-semibold text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    <XCircle className="w-5 h-5 text-gray-400" />
+                    Absen Dinonaktifkan (Belum Terdaftar)
+                  </button>
+                </div>
+              ) : myCurrentCheckIn ? (
                 <div className="p-5 bg-emerald-50 rounded-2xl border border-emerald-200 text-center space-y-3">
                   <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
                     <CheckCircle2 className="w-6 h-6" />

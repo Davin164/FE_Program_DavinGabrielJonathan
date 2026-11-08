@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -18,18 +18,26 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   debounceMs = 300,
 }) => {
   const [query, setQuery] = useState(initialValue);
+  const isFirstRender = useRef(true);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
 
   useEffect(() => {
     setQuery(initialValue);
   }, [initialValue]);
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
     const handler = setTimeout(() => {
-      onChange(query);
+      onChangeRef.current(query);
     }, debounceMs);
 
     return () => clearTimeout(handler);
-  }, [query, debounceMs, onChange]);
+  }, [query, debounceMs]);
 
   return (
     <div className={cn('relative flex items-center w-full max-w-sm', className)}>
@@ -46,7 +54,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
           type="button"
           onClick={() => {
             setQuery('');
-            onChange('');
+            onChangeRef.current('');
           }}
           className="absolute right-3 text-text-secondary hover:text-text-primary p-0.5 rounded-full hover:bg-gray-100 transition-colors"
         >
