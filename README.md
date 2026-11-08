@@ -54,7 +54,6 @@ Sistem mendukung 8 role kepengurusan. Seluruh akun pengujian menggunakan passwor
 - Tambah anggota, ubah role, dan hapus anggota dibatasi khusus role `LEAD` (dilindungi `RoleGuard` dan tombol disembunyikan di UI).
 - Buat, ubah, dan hapus event dapat diakses oleh Lead dan seluruh Core Team eksekutif.
 - Panel Audit Log di Dashboard hanya ditampilkan bagi pengurus.
-- Halaman login menyediakan tombol pilihan akun pengujian untuk mengisi email dan password secara otomatis.
 
 12 divisi GDGoC UNSRI: Machine Learning, Cyber Security, Game Development, Mobile Development, Web Development, UI/UX, Project Management, Human Resource, Public Relation, Creative Design, Videography, Copywriting.
 

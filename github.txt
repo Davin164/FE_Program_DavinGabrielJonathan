@@ -14,7 +14,6 @@ Anon Key: your-supabase-publishable-key
 
 4. Akun Pengujian (Test Accounts)
 Password untuk seluruh akun uji: Password123!
-Tersedia juga fitur tombol "Pilihan Akun Uji Coba" langsung di halaman Login untuk akses cepat satu klik.
 
 Role LEAD (Akses Penuh Chapter, Manajemen Anggota, Role & Divisi)
 Email: lead.gdgoc@gmail.com

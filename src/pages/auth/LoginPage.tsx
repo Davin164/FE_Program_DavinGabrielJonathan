@@ -28,7 +28,6 @@ export const LoginPage: React.FC = () => {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -37,11 +36,6 @@ export const LoginPage: React.FC = () => {
       password: '',
     },
   });
-
-  const selectDemoAccount = (email: string) => {
-    setValue('email', email, { shouldValidate: true });
-    setValue('password', 'Password123!', { shouldValidate: true });
-  };
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
@@ -172,56 +166,6 @@ export const LoginPage: React.FC = () => {
             )}
           </button>
         </form>
-
-        <div className="mt-6 pt-5 border-t border-border">
-          <p className="text-[11px] font-semibold text-text-secondary uppercase tracking-wider mb-2.5 text-center">
-            Pilihan Akun Uji Coba (Klik untuk Isi Otomatis)
-          </p>
-          <div className="flex flex-wrap gap-1.5 justify-center">
-            <button
-              type="button"
-              onClick={() => selectDemoAccount('lead.gdgoc@gmail.com')}
-              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-            >
-              Lead
-            </button>
-            <button
-              type="button"
-              onClick={() => selectDemoAccount('colead.gdgoc@gmail.com')}
-              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-sky-50 text-sky-700 hover:bg-sky-100 transition-colors"
-            >
-              Co-Lead
-            </button>
-            <button
-              type="button"
-              onClick={() => selectDemoAccount('sec1.gdgoc@gmail.com')}
-              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors"
-            >
-              Secretary 1
-            </button>
-            <button
-              type="button"
-              onClick={() => selectDemoAccount('treas1.gdgoc@gmail.com')}
-              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
-            >
-              Treasurer 1
-            </button>
-            <button
-              type="button"
-              onClick={() => selectDemoAccount('core.tech@gmail.com')}
-              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors"
-            >
-              Core Team
-            </button>
-            <button
-              type="button"
-              onClick={() => selectDemoAccount('davin4@gmail.com')}
-              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
-            >
-              Member
-            </button>
-          </div>
-        </div>
 
         <p className="mt-6 text-center text-xs text-text-secondary">
           Don&apos;t have an account yet?{' '}
